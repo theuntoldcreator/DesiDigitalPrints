@@ -25,35 +25,61 @@ const Instagram = () => (
 );
 const Twitter = () => <SocialIcon d="M22 4s-1 2.17-2.67 2.17a5.55 5.55 0 0 1-5 4c0 0-4.17.67-6.17-2.17 0 0-1.5 4.17 2 7 0 0-2.33 1.33-4 1.33 0 0 4.17 3.5 11 0 0 0-6.17-10 0 0-4.17-1 4.17-6.17-1.17 0 0 1.5 2.17 3 2.17L22 4z" />;
 
-const PromoBar = () => (
-  <div className="bg-[#bf1e2e] text-white overflow-hidden py-2 px-4 whitespace-nowrap relative">
-    <div className="flex animate-marquee gap-8 items-center justify-center text-sm font-bold uppercase tracking-widest">
-      <span>✨ 20% OFF ALL WEDDING INVITATIONS • CODE: DESI20 ✨</span>
-      <span className="hidden md:inline">FREE WORLDWIDE DIGITAL DELIVERY • 24HR TURNAROUND</span>
-      <span className="hidden lg:inline">TRUSTED BY 5000+ HAPPY COUPLES WORLDWIDE</span>
-    </div>
-  </div>
-);
+const PromoBar = () => {
+  const messages = [
+    "✨ 20% OFF ALL WEDDING INVITATIONS • CODE: DESI20 ✨",
+    "🚚 FREE WORLDWIDE DIGITAL DELIVERY • 24HR TURNAROUND",
+    "💎 TRUSTED BY 5000+ HAPPY COUPLES WORLDWIDE",
+    "📅 NEW 2026 COLLECTIONS ARE NOW LIVE!"
+  ];
+  const [index, setIndex] = useState(0);
 
-const UtilityHeader = () => (
-  <div className="hidden md:flex bg-[#f9f9f9] border-b border-gray-200">
-    <div className="container mx-auto px-4 md:px-12 py-2 flex justify-between items-center text-[13px] font-medium text-gray-600">
-      <div className="flex gap-8">
-        <a href="#" className="hover:text-[#bf1e2e] transition-colors">Sell Your Art</a>
-        <a href="#" className="hover:text-[#bf1e2e] transition-colors">Order Status</a>
-        <a href="#" className="hover:text-[#bf1e2e] transition-colors uppercase font-bold text-blue-700">Desi Plus</a>
-      </div>
-      <div className="flex gap-6 items-center">
-        <div className="flex items-center gap-1 cursor-pointer hover:text-[#bf1e2e]">
-          <Truck className="w-4 h-4" /> <span>Track Order</span>
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % messages.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [messages.length]);
+
+  return (
+    <div className="bg-[#bf1e2e] text-white h-10 overflow-hidden relative border-b border-white/10">
+      <div className="container mx-auto h-full px-4 md:px-12 flex items-center justify-between text-[11px] font-bold uppercase tracking-widest">
+        {/* Left Static Links */}
+        <div className="hidden lg:flex gap-6 shrink-0">
+          <a href="#" className="hover:text-white/80 transition-colors">Sell Your Art</a>
+          <a href="#" className="hover:text-white/80 transition-colors">Order Status</a>
+          <a href="#" className="text-blue-300 hover:text-blue-200 transition-colors">Desi Plus</a>
         </div>
-        <div className="flex items-center gap-1 cursor-pointer hover:text-[#bf1e2e]">
-          <HelpCircle className="w-4 h-4" /> <span>Help</span>
+
+        {/* Center Vertical Notifications */}
+        <div className="flex-1 h-full flex items-center justify-center relative min-w-0">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={index}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute whitespace-nowrap"
+            >
+              {messages[index]}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Right Static Links */}
+        <div className="hidden lg:flex gap-6 shrink-0 items-center">
+          <div className="flex items-center gap-1 cursor-pointer hover:text-white/80">
+            <Truck className="w-3.5 h-3.5" /> <span>Track Order</span>
+          </div>
+          <div className="flex items-center gap-1 cursor-pointer hover:text-white/80">
+            <HelpCircle className="w-3.5 h-3.5" /> <span>Help</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const MainHeader = ({ searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
@@ -410,7 +436,6 @@ export default function LandingPage({ templates, onStart }) {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-[#bf1e2e] selection:text-white">
       <PromoBar />
-      <UtilityHeader />
       <MainHeader searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <NavigationBar
         occasions={occasions}
