@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, Download, Monitor, Sparkles, Layers, Box, Waves } from 'lucide-react';
+import { ArrowLeft, Download, Monitor, Sparkles, Layers, Box, Waves, Cloud, Copy, Check } from 'lucide-react';
+import { pb } from '../lib/pb';
 
 export default function GeneratorWizard({ selectedTemplate, onBack }) {
   // Form State
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedLink, setSavedLink] = useState(null);
+  const [copied, setCopied] = useState(false);
   const [deviceMode, setDeviceMode] = useState('Desktop');
   const [names, setNames] = useState('Rahul & Aisha');
   const [date, setDate] = useState('Saturday, December 24, 2026');
@@ -260,18 +264,36 @@ export default function GeneratorWizard({ selectedTemplate, onBack }) {
     setPreviewHtml(generateFinishedCode());
   }, [generateFinishedCode]);
 
-  // Handle Download HTML
-  const handleDownload = () => {
-    const htmlCode = generateFinishedCode();
-    const blob = new Blob([htmlCode], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `3d_invite_${names.replace(/\s+/g, '_').toLowerCase()}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  // Handle Save to Cloud
+  const handleSaveToCloud = async () => {
+    setIsSaving(true);
+    try {
+      const config = {
+        names, date, venue, heroImg, galleryImg1, galleryImg2, themeMode, layoutMode
+      };
+      const record = await pb.create('websites', {
+        template_name: selectedTemplate.name,
+        couple_names: names,
+        event_date: date,
+        venue: venue,
+        config: JSON.stringify(config),
+        html: generateFinishedCode()
+      });
+      
+      const link = `${window.location.origin}/invite/${record.id}`;
+      setSavedLink(link);
+    } catch (err) {
+      console.error('Cloud save failed:', err);
+      alert('Cloud save failed. Ensure you have created the "websites" collection in PocketBase.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(savedLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -286,9 +308,21 @@ export default function GeneratorWizard({ selectedTemplate, onBack }) {
             <ArrowLeft className="w-5 h-5" />
             <span className="text-sm font-bold tracking-wider text-black">DESI GENERATOR</span>
           </button>
-          <button onClick={handleDownload} className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-lg active:scale-95">
-            <Download className="w-4 h-4" /> Export Web File
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={handleSaveToCloud} 
+              disabled={isSaving}
+              className="bg-[#bf1e2e] hover:bg-[#a01927] text-white px-4 py-2 rounded-lg text-xs font-black tracking-widest transition flex items-center gap-2 shadow-lg active:scale-95 disabled:opacity-50"
+            >
+              {isSaving ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : <Cloud className="w-4 h-4" />}
+              SAVE TO CLOUD
+            </button>
+            <button onClick={handleDownload} className="bg-black hover:bg-gray-800 text-white px-3 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm active:scale-95">
+              <Download className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Form */}
@@ -411,6 +445,38 @@ export default function GeneratorWizard({ selectedTemplate, onBack }) {
         </div>
       </main>
 
+      {/* ── SUCCESS MODAL ── */}
+      <AnimatePresence>
+        {savedLink && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-6 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+              className="bg-white rounded-[40px] p-12 max-w-xl w-full text-center relative shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]"
+            >
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+                <Check className="w-12 h-12 text-green-500" />
+              </div>
+              <h2 className="text-4xl font-black text-gray-900 tracking-tighter uppercase mb-2">Live on Cloud!</h2>
+              <p className="text-gray-500 font-bold uppercase text-[10px] tracking-[0.2em] mb-8">Invitation Generated Successfully</p>
+              
+              <div className="bg-gray-50 p-4 rounded-2xl flex items-center gap-4 border-2 border-dashed border-gray-200 mb-8">
+                <input readOnly value={savedLink} className="bg-transparent flex-1 text-sm font-bold text-gray-500 outline-none" />
+                <button onClick={copyToClipboard} className="bg-black text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 hover:scale-105 active:scale-95 transition-transform">
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+
+              <button onClick={() => setSavedLink(null)} className="text-sm font-black text-gray-400 hover:text-black uppercase tracking-widest">
+                Close & Continue
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

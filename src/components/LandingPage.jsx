@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { pb } from '../lib/pb';
 import {
   Search, ShoppingCart, User, ChevronDown,
   Menu, Heart, Bell, HelpCircle,
@@ -409,48 +410,97 @@ export default function LandingPage({ templates, onStart }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(8);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const occRes = await fetch('/api/occasions');
-        const occData = await occRes.json();
+        const [occData, uploadedData] = await Promise.all([
+          pb.getFullList('occasions', { sort: 'name' }),
+          pb.getFullList('images', { sort: '-created' })
+        ]);
+        
         setOccasions(occData || []);
 
-        // Initial load
-        setImages((templates || []).map(t => ({
-          id: t.id, image_url: t.thumbnailUrl, name: t.name, template: t
-        })));
+        const staticTemplates = (templates || []).map(t => ({
+          id: `t-${t.id}`, 
+          image_url: t.thumbnailUrl, 
+          name: t.name, 
+          template: t,
+          occasion_id: 'all' // Templates show everywhere by default or can be categorized
+        }));
+
+        const formattedUploads = (uploadedData || []).map(img => ({
+          ...img,
+          image_url: pb.getFileUrl('images', img.id, img.file),
+          occasion_id: img.occasion
+        }));
+
+        const unifiedImages = [...formattedUploads, ...staticTemplates];
+        setImages(unifiedImages);
         setLoading(false);
       } catch (err) {
         console.error('Fetch error:', err);
         setLoading(false);
       }
     };
+
     fetchData();
+
+    // --- VISITOR PULSE (ANALYTICS) ---
+    const trackVisit = async () => {
+      const hasCounted = sessionStorage.getItem('desi_pulse_counted');
+      if (hasCounted) return;
+
+      try {
+        const stats = await pb.getFullList('stats', { filter: 'name="visitors"' });
+        const today = new Date().toISOString().split('T')[0];
+        
+        if (stats.length > 0) {
+          const s = stats[0];
+          const history = s.history || {};
+          history[today] = (history[today] || 0) + 1;
+          await pb.update('stats', s.id, { 
+            value: (s.value || 0) + 1,
+            history: history
+          });
+        } else {
+          await pb.create('stats', { 
+            name: 'visitors', 
+            value: 1, 
+            history: { [today]: 1 } 
+          });
+        }
+        sessionStorage.setItem('desi_pulse_counted', 'true');
+      } catch (err) {
+        console.warn('[Analytics] Pulse failed (Space might be initializing)');
+      }
+    };
+    trackVisit();
+
+    // Real-time Subscriptions
+    const unsubOcc = pb.subscribe('occasions', () => fetchData());
+    const unsubImg = pb.subscribe('images', () => fetchData());
+
+    return () => {
+      unsubOcc();
+      unsubImg();
+    };
   }, [templates]);
 
-  const handleFilterChange = async (occ) => {
+  const handleFilterChange = (occ) => {
     setActiveOccasion(occ.id);
-    setLoading(true);
-    try {
-      if (occ.id === 'all') {
-        setImages((templates || []).map(t => ({
-          id: t.id, image_url: t.thumbnailUrl, name: t.name, template: t
-        })));
-      } else {
-        const res = await fetch(`/api/occasions/${occ.id}/images`);
-        const data = await res.json();
-        setImages(data || []);
-      }
-    } finally {
-      setLoading(false);
-    }
+    setVisibleCount(8); // Reset pagination on category change
   };
 
-  const filteredImages = images.filter(img =>
-    img.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredImages = images.filter(img => {
+    const matchesSearch = img.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesOccasion = activeOccasion === 'all' || img.occasion_id === activeOccasion;
+    return matchesSearch && matchesOccasion;
+  });
+
+  const displayedImages = filteredImages.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredImages.length;
 
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-[#bf1e2e] selection:text-white">
@@ -488,35 +538,48 @@ export default function LandingPage({ templates, onStart }) {
 
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {[1, 2, 3, 4].map(i => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                   <div key={i} className="bg-gray-200 animate-pulse aspect-[4/5] rounded-xl" />
                 ))}
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <AnimatePresence mode="popLayout">
-                  {filteredImages.map((img) => (
-                    <motion.div
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.3 }}
-                      key={img.id}
-                    >
-                      <ProductCard
-                        item={img}
-                        templates={templates}
-                        onStart={onStart}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
+            ) : filteredImages.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  <AnimatePresence mode="popLayout">
+                    {displayedImages.map((img, idx) => (
+                      <motion.div
+                        key={img.id || idx}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.5, delay: (idx % 8) * 0.05 }}
+                      >
+                        <ProductCard
+                          item={img}
+                          templates={templates}
+                          onStart={onStart}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
 
-            {!loading && filteredImages.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-40 bg-white rounded-3xl border-2 border-dashed border-gray-100">
+                {hasMore && (
+                  <div className="mt-16 flex justify-center pb-10">
+                    <button
+                      onClick={() => setVisibleCount(prev => prev + 8)}
+                      className="group relative px-12 py-4 bg-white text-black font-black uppercase tracking-tighter text-lg rounded-full border-2 border-gray-900 shadow-[0_10px_0_#1a1a1a] active:shadow-none active:translate-y-[10px] transition-all overflow-hidden"
+                    >
+                      <span className="relative z-10 flex items-center gap-2" id="loadMoreBtn">
+                        Load More Designs
+                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-40 bg-white rounded-[40px] border-2 border-dashed border-gray-100">
                 <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                   <Search className="w-10 h-10 text-gray-200" />
                 </div>
