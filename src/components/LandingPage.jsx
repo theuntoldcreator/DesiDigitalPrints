@@ -106,7 +106,7 @@ const MainHeader = ({ searchQuery, setSearchQuery }) => {
         </div>
 
         {/* Global Search */}
-        <div className="flex-1 relative group max-w-5xl">
+        <div className="flex-1 relative group max-w-2xl lg:max-w-3xl mx-auto">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#bf1e2e] transition-colors">
             <Search className="w-5 h-5" />
           </div>
@@ -115,9 +115,9 @@ const MainHeader = ({ searchQuery, setSearchQuery }) => {
             placeholder="Search collections or occasions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 md:h-12 bg-gray-100 rounded-full pl-12 pr-4 text-gray-800 outline-none border border-transparent focus:border-gray-300 focus:bg-white transition-all font-medium"
+            className="w-full h-11 md:h-12 bg-gray-50 rounded-full pl-12 pr-4 text-gray-800 outline-none border border-gray-100 focus:border-[#bf1e2e]/30 focus:bg-white transition-all font-medium shadow-inner"
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#bf1e2e] p-2 rounded-full text-white hover:bg-[#a01826] transition-colors">
+          <button className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#bf1e2e] p-2.5 rounded-full text-white hover:bg-[#a01826] transition-all shadow-md active:scale-95">
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -145,14 +145,14 @@ const MainHeader = ({ searchQuery, setSearchQuery }) => {
 
 const NavigationBar = ({ occasions, activeOccasion, onSelect }) => {
   return (
-    <nav className="hidden lg:block border-b border-gray-100 bg-white sticky top-[88px] z-[90] w-full">
-      <ul className="flex items-center justify-center gap-12 py-4 text-[14px] font-bold text-gray-700 uppercase tracking-wide">
+    <nav className="hidden lg:block border-b border-gray-100 bg-white sticky top-[92px] z-[90] w-full shadow-sm">
+      <ul className="flex items-center justify-center gap-14 py-3 text-[13px] font-bold text-gray-800 uppercase tracking-widest">
         <li
           onClick={() => onSelect({ id: 'all', name: 'All' })}
           className={`cursor-pointer hover:text-[#bf1e2e] transition-all relative group py-1 ${activeOccasion === 'all' ? 'text-[#bf1e2e]' : ''}`}
         >
           New Arrivals
-          <div className="absolute -bottom-3 left-0 w-full h-1 bg-[#bf1e2e] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+          <div className="absolute -bottom-[13px] left-0 w-full h-0.5 bg-[#bf1e2e] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
         </li>
         {occasions.map(occ => (
           <li
@@ -161,11 +161,11 @@ const NavigationBar = ({ occasions, activeOccasion, onSelect }) => {
             className={`cursor-pointer hover:text-[#bf1e2e] transition-all relative group py-1 ${activeOccasion === occ.id ? 'text-[#bf1e2e]' : ''}`}
           >
             {occ.name}
-            <div className={`absolute -bottom-3 left-0 w-full h-1 bg-[#bf1e2e] transition-transform origin-left ${activeOccasion === occ.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
+            <div className={`absolute -bottom-[13px] left-0 w-full h-0.5 bg-[#bf1e2e] transition-transform origin-left ${activeOccasion === occ.id ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`} />
           </li>
         ))}
-        <li className="cursor-pointer hover:text-[#bf1e2e] transition-all relative group py-1 font-black text-blue-700">
-          Zazzle Plus
+        <li className="cursor-pointer hover:text-[#bf1e2e] transition-all relative group py-1 font-black text-[#bf1e2e]">
+          Desi Plus
         </li>
       </ul>
     </nav>
@@ -173,46 +173,65 @@ const NavigationBar = ({ occasions, activeOccasion, onSelect }) => {
 };
 
 const HeroSection = () => (
-  <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden bg-[#e8e9eb] flex items-center">
+  <section className="relative w-full min-h-[600px] lg:h-[700px] overflow-hidden bg-[#f3f4f6] flex items-center py-20 lg:py-0">
     <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
       <div className="grid grid-cols-12 h-full gap-4">
         {[...Array(12)].map((_, i) => <div key={i} className="bg-gray-400/20" />)}
       </div>
     </div>
 
-    <div className="container mx-auto px-8 md:px-16 flex flex-col md:flex-row items-center relative z-10">
-      <div className="flex-1 text-center md:text-left space-y-6">
-        <span className="inline-block bg-[#bf1e2e] text-white px-3 py-1 text-xs font-black uppercase tracking-widest rounded">Wedding Season 2026</span>
-        <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-[0.9] tracking-tighter">
-          Make Your <br /> <span className="text-[#bf1e2e]">Special Day</span> <br /> Iconic.
-        </h1>
-        <p className="text-xl text-gray-600 font-medium max-w-md mx-auto md:mx-0">
-          Ultra-premium digital invitations & welcome boards. Designed in minutes, delivered in hours.
+    <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center relative z-10 gap-12 lg:gap-0">
+      <div className="w-full lg:flex-1 text-center lg:text-left space-y-8 order-2 lg:order-1">
+        <div className="space-y-4">
+          <span className="inline-block bg-[#bf1e2e] text-white px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg">Wedding Season 2026</span>
+          <h1 className="text-6xl md:text-7xl xl:text-8xl font-black text-[#1a1a1a] leading-[0.95] tracking-tighter">
+            Make Your <br /> <span className="relative">
+              Special Day
+              <div className="absolute bottom-0 left-0 w-full h-3 bg-[#bf1e2e]/10 -z-10 -rotate-1" />
+              <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-[#bf1e2e]/30" />
+            </span> <br /> Iconic.
+          </h1>
+        </div>
+        <p className="text-xl text-gray-600 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
+          Ultra-premium digital invitations & welcome boards crafted with human detail. Designed in minutes, delivered in hours.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
-          <button className="bg-black hover:bg-gray-800 text-white font-black px-10 py-4 text-lg rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter">
+        <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
+          <button className="bg-black hover:bg-gray-800 text-white font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter">
             Shop Invitations
           </button>
-          <button className="bg-white hover:bg-gray-50 text-black border border-gray-200 font-black px-10 py-4 text-lg rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter">
+          <button className="bg-white hover:bg-gray-50 text-black border-2 border-gray-900 font-black px-12 py-5 text-lg rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter">
             View Bestsellers
           </button>
         </div>
       </div>
-      <div className="flex-1 hidden md:flex justify-end pr-8">
-        <div className="relative">
-          <div className="w-[450px] h-[550px] rounded-[40px] overflow-hidden shadow-[-40px_-40px_0_rgba(191,30,46,0.1)] border border-white">
-            <img src="/src/assets/hero.png" className="w-full h-full object-cover" alt="Hero Wedding" />
+
+      <div className="w-full lg:flex-1 flex justify-center lg:justify-end order-1 lg:order-2">
+        <div className="relative w-full max-w-[500px]">
+          <div className="aspect-[4/5] rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] border-[8px] border-white relative group transition-transform duration-700 hover:scale-[1.02]">
+            <video
+              src="/images/hero.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
           </div>
-          {/* Floating Badge */}
-          <div className="absolute -bottom-10 -left-10 bg-white p-6 rounded-3xl shadow-2xl flex items-center gap-4 animate-bounce-slow border border-gray-100">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-              <ShieldCheck className="w-8 h-8" />
+          
+          {/* Floating Badge (Refined) */}
+          <div className="absolute -bottom-8 -left-12 bg-white p-5 md:p-6 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex items-center gap-4 animate-bounce-slow border border-gray-50 z-20">
+            <div className="w-12 h-12 md:w-14 md:h-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center">
+              <ShieldCheck className="w-7 h-7 md:w-8 md:h-8" />
             </div>
             <div>
-              <p className="font-black text-gray-900 leading-none">Trust-Locked</p>
-              <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Verified Delivery</p>
+              <p className="font-black text-gray-900 text-sm md:text-base leading-none">Trust-Locked</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1.5 line-clamp-1">Digital Authenticity</p>
             </div>
           </div>
+
+          {/* Decorative Elements (Desktop only) */}
+          <div className="hidden xl:block absolute -top-10 -right-10 w-32 h-32 bg-[#bf1e2e]/5 rounded-full blur-3xl" />
         </div>
       </div>
     </div>
