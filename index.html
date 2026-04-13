@@ -2,16 +2,60 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Create stunning wedding invitation websites. Customize premium templates, preview instantly, and download as a standalone HTML file." />
-    <title>Desi Digital Prints — Wedding Website Templates</title>
+    
+    <!-- --- SEO & Branding --- -->
+    <title>Desi Digital Prints | Premium Indian Wedding Invitations & Digital Studio</title>
+    <meta name="description" content="Create stunning digital Indian wedding invitations and welcome boards with Desi Digital Prints. Premium templates, instant downloads, and 24-hour delivery." />
+    <meta name="keywords" content="digital wedding invitations, indian wedding cards, hindu wedding invites, welcome boards desi, custom digital prints, e-invites india" />
+    <meta name="author" content="Desi Digital Prints" />
+    <link rel="canonical" href="https://desidigitalprints.com" />
+
+    <!-- --- Favicons --- -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#bf1e2e" />
+
+    <!-- --- Open Graph / Facebook --- -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://desidigitalprints.com/" />
+    <meta property="og:title" content="Desi Digital Prints — Premium Indian Wedding Invitations" />
+    <meta property="og:description" content="Personalize stunning digital invitations and welcome boards for your special day. Instant delivery and premium designs." />
+    <meta property="og:image" content="/images/logo.png" />
+
+    <!-- --- Twitter --- -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://desidigitalprints.com/" />
+    <meta property="twitter:title" content="Desi Digital Prints — Premium Indian Wedding Invitations" />
+    <meta property="twitter:description" content="Personalize stunning digital invitations and welcome boards for your special day. Instant delivery and premium designs." />
+    <meta property="twitter:image" content="/images/logo.png" />
+
+    <!-- --- Fonts --- -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- --- Code Protection & Policy --- -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   </head>
   <body style="font-family: 'Inter', sans-serif;">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- --- Protection Script: Disable Right-Click & Inspect --- -->
+    <script>
+      document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+      });
+      document.onkeydown = function(e) {
+        if (e.keyCode == 123) return false; // F12
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U
+      };
+    </script>
   </body>
 </html>

@@ -1,0 +1,15 @@
+# robots.txt for Desi Digital Prints
+# Allow branding and products to be indexed, block admin and design tools.
+
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /design/
+
+# Disallow sensitive paths
+Disallow: /admin
+Disallow: /api/
+Disallow: /login
+
+# Sitemaps
+Sitemap: https://desidigitalprints.com/sitemap.xml

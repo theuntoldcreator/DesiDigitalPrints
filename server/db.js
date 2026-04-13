@@ -39,9 +39,28 @@ export const initDb = () => {
       )
     `);
 
+    // Create Occasions Table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS occasions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE
+      )
+    `);
+
+    // Create Occasion Images Table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS occasion_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        occasion_id INTEGER,
+        image_url TEXT,
+        name TEXT,
+        FOREIGN KEY (occasion_id) REFERENCES occasions (id) ON DELETE CASCADE
+      )
+    `);
+
     // Seed Templates if empty
     db.get('SELECT COUNT(*) as count FROM templates', (err, row) => {
-      if (row.count === 0) {
+      if (row && row.count === 0) {
         const stmt = db.prepare('INSERT INTO templates (name, description, thumbnailUrl, baseColorTheme, daisyTheme, fontFamily, htmlContent) VALUES (?, ?, ?, ?, ?, ?, ?)');
 
         stmt.run(
@@ -82,6 +101,29 @@ export const initDb = () => {
 
         stmt.finalize();
         console.log('Database seeded with 5 wedding templates.');
+      }
+    });
+
+    // Seed Occasions if empty
+    db.get('SELECT COUNT(*) as count FROM occasions', (err, row) => {
+      if (row && row.count === 0) {
+        const occasions = ['Wedding', 'Engagement', 'Haldi', 'Anniversary', 'Birthday'];
+        const stmt = db.prepare('INSERT INTO occasions (name) VALUES (?)');
+        occasions.forEach(name => stmt.run(name));
+        stmt.finalize();
+        console.log('Occasions seeded.');
+
+        // Add some initial images for Wedding
+        db.get('SELECT id FROM occasions WHERE name = "Wedding"', (err, row) => {
+          if (row) {
+            const weddingId = row.id;
+            const stmtImg = db.prepare('INSERT INTO occasion_images (occasion_id, image_url, name) VALUES (?, ?, ?)');
+            for (let i = 1; i <= 6; i++) {
+              stmtImg.run(weddingId, `https://picsum.photos/seed/wedding${i}/400/600`, `Wedding ${i}`);
+            }
+            stmtImg.finalize();
+          }
+        });
       }
     });
   });
