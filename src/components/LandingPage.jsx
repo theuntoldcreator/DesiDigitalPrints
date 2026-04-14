@@ -285,8 +285,10 @@ const HeroSection = () => {
                 loop
                 muted
                 playsInline
+                controls={false}
                 preload="auto"
                 fetchPriority="high"
+                onCanPlay={(e) => e.target.play()}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
@@ -965,6 +967,9 @@ export default function LandingPage({ templates, onStart }) {
 
       {/* Tailwind Utility for Marquee */}
       <style>{`
+        html {
+          scroll-behavior: smooth;
+        }
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
