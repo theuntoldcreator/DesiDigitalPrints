@@ -197,120 +197,120 @@ const HeroSection = () => {
   const heroRef = useRef(null);
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-      tl.from('.hero-badge', { opacity: 0, y: 30, duration: 0.6 })
-        .from('.hero-heading', { opacity: 0, y: 50, duration: 0.8 }, '-=0.3')
-        .from('.hero-desc', { opacity: 0, y: 30, duration: 0.6 }, '-=0.4')
-        .from('.hero-btns > *', { opacity: 0, y: 20, stagger: 0.15, duration: 0.5 }, '-=0.3')
-        .from('.hero-avail', { opacity: 0, x: -20, duration: 0.4 }, '-=0.2')
-        .from('.hero-video-wrap', { opacity: 0, scale: 0.9, duration: 1, ease: 'power2.out' }, '-=0.8')
-        .from('.hero-phone-badge', { opacity: 0, y: 30, duration: 0.5 }, '-=0.3');
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out', force3D: true } });
+      tl.from('.hero-badge', { opacity: 0, y: 15, duration: 0.2 })
+        .from('.hero-heading', { opacity: 0, y: 20, duration: 0.3 }, '-=0.1')
+        .from('.hero-desc', { opacity: 0, y: 15, duration: 0.2 }, '-=0.2')
+        .from('.hero-btns > *', { opacity: 0, y: 10, stagger: 0.05, duration: 0.2 }, '-=0.15')
+        .from('.hero-avail', { opacity: 0, x: -10, duration: 0.2 }, '-=0.15')
+        .from('.hero-video-wrap', { opacity: 0, scale: 0.98, duration: 0.4 }, '-=0.3')
+        .from('.hero-phone-badge', { opacity: 0, y: 15, duration: 0.2 }, '-=0.2');
     }, heroRef);
     return () => ctx.revert();
   }, []);
 
   return (
-  <section ref={heroRef} className="relative w-full min-h-[550px] lg:min-h-[680px] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center py-16 lg:py-12">
-    {/* Animated glass sliding bars */}
-    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-      <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
-        {[...Array(24)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute top-0 h-full backdrop-blur-[1px]"
-            style={{
-              width: '200px',
-              left: `${i * (100 / 12)}%`,
-              background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 20%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 80%, transparent 100%)',
-              borderLeft: '1px solid rgba(255,255,255,0.06)',
-              borderRight: '1px solid rgba(255,255,255,0.03)',
-              boxShadow: '0 0 30px rgba(255,255,255,0.02)',
-            }}
-          />
-        ))}
-      </div>
-    </div>
-    <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
-    <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-black/10 rounded-full blur-3xl pointer-events-none" />
-
-    <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center relative z-10 gap-12 lg:gap-0">
-      <div className="w-full lg:flex-1 text-center lg:text-left space-y-8 order-2 lg:order-1">
-        <div className="space-y-4">
-          <span className="hero-badge inline-block bg-white/15 backdrop-blur-md text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-white/20">Custom Digital Art Studio</span>
-          <h1 className="hero-heading text-6xl md:text-7xl xl:text-8xl font-black text-white leading-[0.95] tracking-tighter drop-shadow-lg">
-            Your <br /> <span className="relative">
-              Special Moment
-              <div className="absolute bottom-0 left-0 w-full h-3 bg-white/15 -z-10 -rotate-1" />
-              <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-white/40" />
-            </span> <br /> Designed.
-          </h1>
-        </div>
-        <p className="hero-desc text-xl text-white/80 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
-          Premium digital invitations, welcome boards & event art — crafted with love. Browse my work, pick a design you love, and message me on WhatsApp to bring it to life.
-        </p>
-        <div className="hero-btns flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
-          <a
-            href="#gallery"
-            className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center"
-          >
-            Browse My Work
-          </a>
-          <button
-            onClick={() => openWhatsApp('Hi! I\'m interested in getting a custom digital design.')}
-            className="bg-[#25D366] hover:bg-[#1ebe5d] text-white font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(37,211,102,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3 border-2 border-[#25D366]"
-          >
-            <WhatsAppIcon className="w-6 h-6" />
-            Message on WhatsApp
-          </button>
-        </div>
-
-        {/* Availability Badge */}
-        <div className="hero-avail flex items-center gap-3 justify-center lg:justify-start pt-2">
-          <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full">
-            <div className="w-2.5 h-2.5 bg-[#25D366] rounded-full animate-pulse shadow-[0_0_8px_#25D366]" />
-            <span className="text-xs font-black text-white uppercase tracking-wider">Available 24/7</span>
-          </div>
-          <span className="text-sm font-bold text-white/50">Instant replies</span>
-        </div>
-      </div>
-
-      <div className="w-full lg:flex-1 flex justify-center lg:justify-end order-1 lg:order-2">
-        <div className="hero-video-wrap relative w-full max-w-[440px] lg:max-w-[460px] xl:max-w-[500px]">
-          <div className="aspect-[3/4] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
-            <video
-              src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              className="w-full h-full object-cover"
+    <section ref={heroRef} className="relative w-full min-h-[550px] lg:min-h-[680px] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center py-16 lg:py-12">
+      {/* Animated glass sliding bars */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
+          {[...Array(16)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute top-0 h-full backdrop-blur-[1px]"
+              style={{
+                width: '200px',
+                left: `${i * (100 / 12)}%`,
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 20%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 80%, transparent 100%)',
+                borderLeft: '1px solid rgba(255,255,255,0.06)',
+                borderRight: '1px solid rgba(255,255,255,0.03)',
+                boxShadow: '0 0 30px rgba(255,255,255,0.02)',
+              }}
             />
-            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
-          </div>
-
-          {/* Floating WhatsApp Badge */}
-          <div
-            onClick={() => openWhatsApp()}
-            className="hero-phone-badge absolute -bottom-6 left-0 lg:-left-8 bg-white p-4 md:p-5 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] flex items-center gap-3 animate-bounce-slow border border-gray-50 z-20 cursor-pointer hover:shadow-2xl transition-shadow"
-          >
-            <div className="w-12 h-12 md:w-14 md:h-14 bg-[#bf1e2e]/10 text-[#bf1e2e] rounded-2xl flex items-center justify-center">
-              <Phone className="w-7 h-7 md:w-8 md:h-8" />
-            </div>
-            <div>
-              <p className="font-black text-gray-900 text-sm md:text-base leading-none">+91 90308 11329</p>
-              <p className="text-[10px] font-bold text-[#bf1e2e] uppercase tracking-widest mt-1.5 line-clamp-1">24/7 Available</p>
-            </div>
-          </div>
-
-          {/* Decorative Elements (Desktop only) */}
-          <div className="hidden xl:block absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
+          ))}
         </div>
       </div>
-    </div>
-  </section>
+      <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-black/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center relative z-10 gap-12 lg:gap-0">
+        <div className="w-full lg:flex-1 text-center lg:text-left space-y-8 order-2 lg:order-1">
+          <div className="space-y-4">
+            <span className="hero-badge inline-block bg-white/15 backdrop-blur-md text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-white/20">Custom Digital Art Studio</span>
+            <h1 className="hero-heading text-6xl md:text-7xl xl:text-8xl font-black text-white leading-[0.95] tracking-tighter drop-shadow-lg">
+              Your <br /> <span className="relative">
+                Special Moment
+                <div className="absolute bottom-0 left-0 w-full h-3 bg-white/15 -z-10 -rotate-1" />
+                <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-white/40" />
+              </span> <br /> Designed.
+            </h1>
+          </div>
+          <p className="hero-desc text-xl text-white/80 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            Premium digital invitations, welcome boards & event art — crafted with love. Browse my work, pick a design you love, and message me on WhatsApp to bring it to life.
+          </p>
+          <div className="hero-btns flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
+            <a
+              href="#gallery"
+              className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center"
+            >
+              Browse My Work
+            </a>
+            <button
+              onClick={() => openWhatsApp('Hi! I\'m interested in getting a custom digital design.')}
+              className="bg-[#25D366] hover:bg-[#1ebe5d] text-white font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(37,211,102,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3 border-2 border-[#25D366]"
+            >
+              <WhatsAppIcon className="w-6 h-6" />
+              Message on WhatsApp
+            </button>
+          </div>
+
+          {/* Availability Badge */}
+          <div className="hero-avail flex items-center gap-3 justify-center lg:justify-start pt-2">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full">
+              <div className="w-2.5 h-2.5 bg-[#25D366] rounded-full animate-pulse shadow-[0_0_8px_#25D366]" />
+              <span className="text-xs font-black text-white uppercase tracking-wider">Available 24/7</span>
+            </div>
+            <span className="text-sm font-bold text-white/50">Instant replies</span>
+          </div>
+        </div>
+
+        <div className="w-full lg:flex-1 flex justify-center lg:justify-end order-1 lg:order-2">
+          <div className="hero-video-wrap relative w-full max-w-[440px] lg:max-w-[460px] xl:max-w-[500px]">
+            <div className="aspect-[3/4] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
+              <video
+                src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+                fetchPriority="high"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
+            </div>
+
+            {/* Floating WhatsApp Badge */}
+            <div
+              onClick={() => openWhatsApp()}
+              className="hero-phone-badge absolute -bottom-6 left-0 lg:-left-8 bg-white p-4 md:p-5 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] flex items-center gap-3 animate-bounce-slow border border-gray-50 z-20 cursor-pointer hover:shadow-2xl transition-shadow"
+            >
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#bf1e2e]/10 text-[#bf1e2e] rounded-2xl flex items-center justify-center">
+                <Phone className="w-7 h-7 md:w-8 md:h-8" />
+              </div>
+              <div>
+                <p className="font-black text-gray-900 text-sm md:text-base leading-none">+91 90308 11329</p>
+                <p className="text-[10px] font-bold text-[#bf1e2e] uppercase tracking-widest mt-1.5 line-clamp-1">24/7 Available</p>
+              </div>
+            </div>
+
+            {/* Decorative Elements (Desktop only) */}
+            <div className="hidden xl:block absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
@@ -320,44 +320,44 @@ const CategoryCircles = ({ occasions, onSelect, activeId }) => {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from('.cat-heading', {
-        opacity: 0, y: 40, duration: 0.7, ease: 'power2.out',
-        scrollTrigger: { trigger: '.cat-heading', start: 'top 85%' }
+        opacity: 0, y: 20, duration: 0.2, ease: 'power2.out', force3D: true,
+        scrollTrigger: { trigger: '.cat-heading', start: 'top 95%', once: true }
       });
       gsap.from('.cat-circle', {
-        opacity: 0, y: 30, scale: 0.8, stagger: 0.12, duration: 0.6, ease: 'back.out(1.4)',
-        scrollTrigger: { trigger: '.cat-circles-wrap', start: 'top 85%' }
+        opacity: 0, y: 15, scale: 0.98, stagger: 0.05, duration: 0.2, ease: 'power2.out', force3D: true,
+        scrollTrigger: { trigger: '.cat-circles-wrap', start: 'top 95%', once: true }
       });
     }, catRef);
     return () => ctx.revert();
   }, [occasions]);
 
   return (
-  <div ref={catRef} className="py-16 md:py-24 bg-white overflow-hidden">
-    <div className="container mx-auto px-6">
-      <div className="cat-heading text-center mb-12 space-y-3">
-        <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Collections</div>
-        <h2 className="text-4xl font-black text-gray-900 tracking-tighter">Browse by Occasion</h2>
-        <p className="text-gray-500 font-medium italic">Hand-crafted collections for every celebration</p>
-      </div>
-      <div className="cat-circles-wrap flex flex-wrap justify-center gap-6 md:gap-12">
-        {occasions.map(occ => (
-          <div
-            key={occ.id}
-            className="cat-circle flex flex-col items-center gap-4 group cursor-pointer"
-            onClick={() => onSelect(occ)}
-          >
-            <div className={`w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
-              <div className="w-full h-full rounded-full overflow-hidden relative">
-                <img src={`https://picsum.photos/seed/${occ.name}/200/200`} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                <div className={`absolute inset-0 transition-colors ${activeId === occ.id ? 'bg-[#bf1e2e]/10' : 'bg-black/10 group-hover:bg-[#bf1e2e]/10'}`} />
+    <div ref={catRef} className="py-16 md:py-24 bg-white overflow-hidden">
+      <div className="container mx-auto px-6">
+        <div className="cat-heading text-center mb-12 space-y-3">
+          <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Collections</div>
+          <h2 className="text-4xl font-black text-gray-900 tracking-tighter">Browse by Occasion</h2>
+          <p className="text-gray-500 font-medium italic">Hand-crafted collections for every celebration</p>
+        </div>
+        <div className="cat-circles-wrap flex flex-wrap justify-center gap-6 md:gap-12">
+          {occasions.map(occ => (
+            <div
+              key={occ.id}
+              className="cat-circle flex flex-col items-center gap-4 group cursor-pointer"
+              onClick={() => onSelect(occ)}
+            >
+              <div className={`w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
+                <div className="w-full h-full rounded-full overflow-hidden relative">
+                  <img src={`https://picsum.photos/seed/${occ.name}/200/200`} loading="lazy" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                  <div className={`absolute inset-0 transition-colors ${activeId === occ.id ? 'bg-[#bf1e2e]/10' : 'bg-black/10 group-hover:bg-[#bf1e2e]/10'}`} />
+                </div>
               </div>
+              <span className={`text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
             </div>
-            <span className={`text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
-  </div>
   );
 };
 
@@ -451,65 +451,65 @@ const HowItWorks = () => {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from('.hiw-heading', {
-        opacity: 0, y: 40, duration: 0.7, ease: 'power2.out',
-        scrollTrigger: { trigger: '.hiw-heading', start: 'top 85%' }
+        opacity: 0, y: 20, duration: 0.2, ease: 'power2.out', force3D: true,
+        scrollTrigger: { trigger: '.hiw-heading', start: 'top 95%', once: true }
       });
       gsap.from('.hiw-step', {
-        opacity: 0, y: 50, stagger: 0.2, duration: 0.7, ease: 'power2.out',
-        scrollTrigger: { trigger: '.hiw-steps', start: 'top 80%' }
+        opacity: 0, y: 20, stagger: 0.05, duration: 0.2, ease: 'power2.out', force3D: true,
+        scrollTrigger: { trigger: '.hiw-steps', start: 'top 90%', once: true }
       });
       gsap.from('.hiw-cta', {
-        opacity: 0, y: 30, duration: 0.6, ease: 'power2.out',
-        scrollTrigger: { trigger: '.hiw-cta', start: 'top 90%' }
+        opacity: 0, y: 10, duration: 0.2, ease: 'power2.out', force3D: true,
+        scrollTrigger: { trigger: '.hiw-cta', start: 'top 95%', once: true }
       });
     }, howRef);
     return () => ctx.revert();
   }, []);
 
   return (
-  <section ref={howRef} id="how-it-works" className="py-24 bg-gradient-to-b from-white to-[#fff5f5] scroll-mt-36">
-    <div className="container mx-auto px-6">
-      <div className="hiw-heading text-center mb-16 space-y-4">
-        <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Simple Process</div>
-        <h2 className="text-5xl font-black text-gray-900 tracking-tighter">How It Works</h2>
-        <p className="text-gray-500 font-medium max-w-lg mx-auto">Three simple steps to get your perfect custom design</p>
-      </div>
-      <div className="hiw-steps grid grid-cols-1 md:grid-cols-3 gap-16">
-        {[
-          { icon: Search, step: '01', title: 'Browse Designs', desc: 'Explore my portfolio of premium digital invitations, welcome boards, and event art across all occasions.' },
-          { icon: MessageCircle, step: '02', title: 'Message on WhatsApp', desc: 'Found something you love? Send me a message on WhatsApp with the design you like and your event details.' },
-          { icon: Sparkles, step: '03', title: 'Get Your Design', desc: 'I\'ll customize your chosen design with your details and deliver the high-res digital file — fast and beautiful.' }
-        ].map((prop, i) => (
-          <div key={i} className="hiw-step flex flex-col items-center text-center gap-4 group relative">
-            <div className="absolute -top-4 -right-4 text-8xl font-black text-[#bf1e2e]/[0.04] select-none pointer-events-none group-hover:text-[#bf1e2e]/[0.08] transition-colors">{prop.step}</div>
-            <div className="w-20 h-20 bg-gray-50 text-[#bf1e2e] rounded-3xl flex items-center justify-center group-hover:bg-[#bf1e2e] group-hover:text-white transition-all duration-500 shadow-xl border border-gray-100 relative z-10">
-              <prop.icon className="w-10 h-10" />
+    <section ref={howRef} id="how-it-works" className="py-24 bg-gradient-to-b from-white to-[#fff5f5] scroll-mt-36">
+      <div className="container mx-auto px-6">
+        <div className="hiw-heading text-center mb-16 space-y-4">
+          <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Simple Process</div>
+          <h2 className="text-5xl font-black text-gray-900 tracking-tighter">How It Works</h2>
+          <p className="text-gray-500 font-medium max-w-lg mx-auto">Three simple steps to get your perfect custom design</p>
+        </div>
+        <div className="hiw-steps grid grid-cols-1 md:grid-cols-3 gap-16">
+          {[
+            { icon: Search, step: '01', title: 'Browse Designs', desc: 'Explore my portfolio of premium digital invitations, welcome boards, and event art across all occasions.' },
+            { icon: MessageCircle, step: '02', title: 'Message on WhatsApp', desc: 'Found something you love? Send me a message on WhatsApp with the design you like and your event details.' },
+            { icon: Sparkles, step: '03', title: 'Get Your Design', desc: 'I\'ll customize your chosen design with your details and deliver the high-res digital file — fast and beautiful.' }
+          ].map((prop, i) => (
+            <div key={i} className="hiw-step flex flex-col items-center text-center gap-4 group relative">
+              <div className="absolute -top-4 -right-4 text-8xl font-black text-[#bf1e2e]/[0.04] select-none pointer-events-none group-hover:text-[#bf1e2e]/[0.08] transition-colors">{prop.step}</div>
+              <div className="w-20 h-20 bg-gray-50 text-[#bf1e2e] rounded-3xl flex items-center justify-center group-hover:bg-[#bf1e2e] group-hover:text-white transition-all duration-500 shadow-xl border border-gray-100 relative z-10">
+                <prop.icon className="w-10 h-10" />
+              </div>
+              <h4 className="text-xl font-black text-gray-900 tracking-tighter uppercase">{prop.title}</h4>
+              <p className="text-gray-500 font-medium leading-relaxed">{prop.desc}</p>
             </div>
-            <h4 className="text-xl font-black text-gray-900 tracking-tighter uppercase">{prop.title}</h4>
-            <p className="text-gray-500 font-medium leading-relaxed">{prop.desc}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* CTA below How It Works */}
-      <div className="hiw-cta mt-16 text-center flex flex-col sm:flex-row gap-4 justify-center">
-        <button
-          onClick={() => openWhatsApp('Hi! I\'d like to discuss a custom design for my event.')}
-          className="bg-[#bf1e2e] hover:bg-[#a01826] text-white font-black px-10 py-5 text-lg rounded-full shadow-[0_15px_30px_rgba(191,30,46,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter inline-flex items-center justify-center gap-3"
-        >
-          <WhatsAppIcon className="w-6 h-6" />
-          Start Your Order on WhatsApp
-        </button>
-        <a
-          href="tel:+919030811329"
-          className="bg-white text-[#bf1e2e] border-2 border-[#bf1e2e] font-black px-10 py-5 text-lg rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter inline-flex items-center justify-center gap-3"
-        >
-          <Phone className="w-5 h-5" />
-          +91 9030811329
-        </a>
+        {/* CTA below How It Works */}
+        <div className="hiw-cta mt-16 text-center flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={() => openWhatsApp('Hi! I\'d like to discuss a custom design for my event.')}
+            className="bg-[#bf1e2e] hover:bg-[#a01826] text-white font-black px-10 py-5 text-lg rounded-full shadow-[0_15px_30px_rgba(191,30,46,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter inline-flex items-center justify-center gap-3"
+          >
+            <WhatsAppIcon className="w-6 h-6" />
+            Start Your Order on WhatsApp
+          </button>
+          <a
+            href="tel:+919030811329"
+            className="bg-white text-[#bf1e2e] border-2 border-[#bf1e2e] font-black px-10 py-5 text-lg rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter inline-flex items-center justify-center gap-3"
+          >
+            <Phone className="w-5 h-5" />
+            +91 9030811329
+          </a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
 
@@ -520,50 +520,50 @@ const WhatsAppBanner = () => {
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.from('.banner-content', {
-        opacity: 0, y: 60, scale: 0.95, duration: 0.9, ease: 'power2.out',
-        scrollTrigger: { trigger: bannerRef.current, start: 'top 80%' }
+        opacity: 0, y: 30, scale: 0.99, duration: 0.3, ease: 'power2.out', force3D: true,
+        scrollTrigger: { trigger: bannerRef.current, start: 'top 95%', once: true }
       });
     }, bannerRef);
     return () => ctx.revert();
   }, []);
 
   return (
-  <section ref={bannerRef} className="py-20 bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] relative overflow-hidden">
-    <div className="absolute inset-0 opacity-10">
-      <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
-      <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
-    </div>
-    <div className="container mx-auto px-6 text-center relative z-10">
-      <div className="banner-content max-w-3xl mx-auto space-y-8">
-        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
-          <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse" />
-          <span className="text-white/90 text-xs font-black uppercase tracking-widest">Available Right Now</span>
-        </div>
-        <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-tight">
-          Ready to Make Your <br /> Event Unforgettable?
-        </h2>
-        <p className="text-white/80 text-xl font-medium max-w-xl mx-auto">
-          Just send me a WhatsApp message with your ideas. I'll craft the perfect digital design for your special occasion.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-          <button
-            onClick={() => openWhatsApp('Hi! I want to order a custom design for my event! 🎉')}
-            className="bg-white text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.15)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
-          >
-            <WhatsAppIcon className="w-6 h-6" />
-            Chat on WhatsApp
-          </button>
-          <a
-            href="tel:+919030811329"
-            className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 font-black px-12 py-5 text-lg rounded-full shadow-lg transition-all hover:scale-105 hover:bg-white/20 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
-          >
-            <Phone className="w-5 h-5" />
-            +91 9030811329
-          </a>
+    <section ref={bannerRef} className="py-20 bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
+      </div>
+      <div className="container mx-auto px-6 text-center relative z-10">
+        <div className="banner-content max-w-3xl mx-auto space-y-8">
+          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
+            <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse" />
+            <span className="text-white/90 text-xs font-black uppercase tracking-widest">Available Right Now</span>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-tight">
+            Ready to Make Your <br /> Event Unforgettable?
+          </h2>
+          <p className="text-white/80 text-xl font-medium max-w-xl mx-auto">
+            Just send me a WhatsApp message with your ideas. I'll craft the perfect digital design for your special occasion.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <button
+              onClick={() => openWhatsApp('Hi! I want to order a custom design for my event! 🎉')}
+              className="bg-white text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.15)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
+            >
+              <WhatsAppIcon className="w-6 h-6" />
+              Chat on WhatsApp
+            </button>
+            <a
+              href="tel:+919030811329"
+              className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 font-black px-12 py-5 text-lg rounded-full shadow-lg transition-all hover:scale-105 hover:bg-white/20 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
+            >
+              <Phone className="w-5 h-5" />
+              +91 9030811329
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
   );
 };
 
@@ -900,13 +900,18 @@ export default function LandingPage({ templates, onStart }) {
         }
         .hero-sliding-bars {
           animation: heroSlide 30s linear infinite;
+          will-change: transform;
+        }
+        .hero-badge, .hero-heading, .hero-desc, .hero-btns, .hero-video-wrap, .cat-circle, .hiw-step, .banner-content {
+          will-change: opacity, transform;
         }
         @keyframes pageFadeIn {
-          0% { opacity: 0; transform: translateY(12px); }
+          0% { opacity: 0; transform: translateY(8px); }
           100% { opacity: 1; transform: translateY(0); }
         }
         .page-fadein {
-          animation: pageFadeIn 0.8s ease-out forwards;
+          animation: pageFadeIn 0.1s ease-out forwards;
+          will-change: opacity, transform;
         }
       `}
       </style>
