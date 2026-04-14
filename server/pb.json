@@ -1,0 +1,59 @@
+[
+  {
+    "id": "occasions_coll",
+    "name": "occasions",
+    "type": "base",
+    "system": false,
+    "schema": [
+      { "id": "occ_name_field", "name": "name", "type": "text", "required": true, "unique": true }
+    ],
+    "listRule": "", "viewRule": "", "createRule": "", "updateRule": "", "deleteRule": ""
+  },
+  {
+    "id": "images_coll",
+    "name": "images",
+    "type": "base",
+    "schema": [
+      { "id": "img_file_field", "name": "file", "type": "file", "required": true, "options": { "maxSelect": 1, "maxSize": 10485760 } },
+      { "id": "img_name_field", "name": "name", "type": "text" },
+      { "id": "img_occ_field", "name": "occasion", "type": "relation", "required": true, "options": { "collectionId": "occasions_coll", "maxSelect": 1, "cascadeDelete": true } }
+    ],
+    "listRule": "", "viewRule": "", "createRule": "", "updateRule": "", "deleteRule": ""
+  },
+  {
+    "id": "templates_coll",
+    "name": "templates",
+    "type": "base",
+    "schema": [
+      { "id": "tpl_name_field", "name": "name", "type": "text", "required": true, "unique": true },
+      { "id": "tpl_desc_field", "name": "description", "type": "text" },
+      { "id": "tpl_thumb_field", "name": "thumbnailUrl", "type": "text" },
+      { "id": "tpl_base_field", "name": "baseColorTheme", "type": "text" },
+      { "id": "tpl_daisy_field", "name": "daisyTheme", "type": "text" },
+      { "id": "tpl_font_field", "name": "fontFamily", "type": "text" },
+      { "id": "tpl_html_field", "name": "htmlContent", "type": "text" }
+    ],
+    "listRule": "", "viewRule": "", "createRule": "", "updateRule": "", "deleteRule": ""
+  },
+  {
+    "id": "stats_coll",
+    "name": "stats",
+    "type": "base",
+    "schema": [
+      { "id": "sta_name_field", "name": "name", "type": "text", "required": true, "unique": true },
+      { "id": "sta_val_field", "name": "value", "type": "number" },
+      { "id": "sta_hist_field", "name": "history", "type": "json" }
+    ],
+    "listRule": "", "viewRule": "", "createRule": "", "updateRule": "", "deleteRule": ""
+  },
+  {
+    "id": "notes_coll",
+    "name": "notes",
+    "type": "base",
+    "schema": [
+      { "id": "not_title_field", "name": "title", "type": "text" },
+      { "id": "not_cont_field", "name": "content", "type": "text" }
+    ],
+    "listRule": "", "viewRule": "", "createRule": "", "updateRule": "", "deleteRule": ""
+  }
+]

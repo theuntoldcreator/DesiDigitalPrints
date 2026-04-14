@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage';
 import GeneratorWizard from './components/GeneratorWizard';
 import AdminLogin from './components/admin/AdminLogin';
 import AdminDashboard from './components/admin/AdminDashboard';
+import { pb } from './lib/pb';
 
 function App() {
   const [templates, setTemplates] = useState([]);
@@ -11,11 +12,10 @@ function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Fetch prebuilt templates
-    fetch('/api/templates')
-      .then(res => res.json())
+    // Fetch prebuilt templates from PocketBase
+    pb.getFullList('templates')
       .then(data => setTemplates(data))
-      .catch(err => console.error('Error fetching templates:', err));
+      .catch(err => console.error('Error fetching templates from PB:', err));
 
     // Check for existing admin session
     const session = JSON.parse(localStorage.getItem('admin_session'));

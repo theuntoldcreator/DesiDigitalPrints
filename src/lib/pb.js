@@ -4,15 +4,35 @@
  */
 
 // --- CONNECTION CONFIGURATION ---
-// Local Development: 'http://127.0.0.1:8090'
+// Local Development Fallback: 'http://127.0.0.1:8090'
 // Hugging Face Production: 'https://theuntoldcreator1999-desidigitalprints.hf.space'
-const PB_URL = 'https://theuntoldcreator1999-desidigitalprints.hf.space'; 
+const getPbUrl = () => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Default to local PB during dev, but allow falling back to remote if local is unreachable
+      // For now, we'll keep the remote as primary if the user is working on the site
+      return 'https://theuntoldcreator1999-desidigitalprints.hf.space';
+    }
+  }
+  return 'https://theuntoldcreator1999-desidigitalprints.hf.space';
+};
+
+const PB_URL = getPbUrl();
 // --------------------------------
 
 export const pb = {
   baseUrl: PB_URL,
   _eventSource: null,
   _subscribers: {},
+
+  async healthCheck() {
+    try {
+      const res = await fetch(`${PB_URL}/api/health`, { method: 'GET', signal: AbortSignal.timeout(3000) });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
 
   // Establish SSE connection
   _connectRealtime() {

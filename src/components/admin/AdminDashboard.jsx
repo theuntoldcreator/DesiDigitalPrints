@@ -21,7 +21,8 @@ import {
   Moon,
   Pencil,
   Check,
-  X
+  X,
+  ExternalLink
 } from 'lucide-react';
 import OccasionManager from './OccasionManager';
 import ImageManager from './ImageManager';
@@ -52,17 +53,25 @@ export default function AdminDashboard({ onLogout }) {
   useEffect(() => {
     fetchOccasions();
     fetchStats();
+    
+    // Initial health check
+    pb.healthCheck().then(ok => setIsConnected(ok));
 
     // Real-time Subscriptions
     const unsubOcc = pb.subscribe('occasions', () => fetchOccasions());
     const unsubStats = pb.subscribe('stats', () => fetchStats());
 
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const healthTimer = setInterval(async () => {
+      const ok = await pb.healthCheck();
+      setIsConnected(ok);
+    }, 30000); // Check every 30s
     
     return () => {
       unsubOcc();
       unsubStats();
       clearInterval(timer);
+      clearInterval(healthTimer);
     };
   }, []);
 
@@ -70,9 +79,12 @@ export default function AdminDashboard({ onLogout }) {
     try {
       const data = await pb.getFullList('occasions', { sort: 'name' });
       setOccasions(data || []);
+      // If we got data, we are connected
       setIsConnected(true);
     } catch (err) {
-      setIsConnected(false);
+      if (err.message === 'PB_OFFLINE') {
+        setIsConnected(false);
+      }
     }
   };
 
@@ -178,6 +190,9 @@ export default function AdminDashboard({ onLogout }) {
              </button>
              <button onClick={goHome} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-all text-gray-500 dark:text-gray-400">
                 <Home className="w-4 h-4" />
+             </button>
+             <button title="Visit Site" onClick={() => window.location.href = '/'} className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-all text-gray-500 dark:text-gray-400">
+                <ExternalLink className="w-4 h-4" />
              </button>
              <button onClick={onLogout} className="p-2 bg-[#bf1e2e] text-white rounded-lg hover:opacity-90 transition-all shadow-sm">
                 <LogOut className="w-4 h-4" />
@@ -304,8 +319,18 @@ export default function AdminDashboard({ onLogout }) {
                   <p className="text-[10px] font-black uppercase tracking-widest text-white whitespace-nowrap">{currentTime.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                   <p className="text-[10px] font-bold mt-1 whitespace-nowrap">{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</p>
                </div>
+               
+               <button 
+                 onClick={() => window.location.href = '/'}
+                 title="View Landing Page"
+                 className="w-12 h-12 shrink-0 rounded-xl bg-white/5 border border-white/10 text-white flex items-center justify-center hover:bg-[#bf1e2e] hover:border-[#bf1e2e] transition-all group"
+               >
+                 <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform" />
+               </button>
+
                <button 
                  onClick={onLogout}
+                 title="Log Out"
                  className="w-12 h-12 shrink-0 rounded-xl bg-[#bf1e2e] text-white flex items-center justify-center shadow-[0_8px_20px_rgba(191,30,46,0.4)] hover:scale-110 active:scale-95 transition-all"
                >
                  <LogOut className="w-5 h-5" />

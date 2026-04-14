@@ -8,7 +8,8 @@ import {
   Menu, Heart, Bell, HelpCircle,
   Clock, Star, ArrowRight, ShieldCheck,
   CheckCircle, Phone, Sparkles, Palette, Send,
-  X, ZoomIn, ZoomOut, Maximize, MousePointer2
+  X, ZoomIn, ZoomOut, Maximize, MousePointer2,
+  ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -196,6 +197,14 @@ const NavigationBar = ({ occasions, activeOccasion, onSelect }) => {
 
 const HeroSection = () => {
   const heroRef = useRef(null);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(e => console.warn('[Video] Playback blocked by browser, waiting for user interaction...'));
+    }
+  }, []);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -212,7 +221,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative w-full min-h-[calc(100vh-80px)] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center pt-[110px] sm:pt-[120px] lg:pt-[110px] pb-10 lg:pb-0">
+    <section ref={heroRef} className="relative w-full min-h-[calc(100vh-80px)] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center pt-[60px] sm:pt-[70px] lg:pt-[56px] pb-6 lg:pb-0">
       {/* Animated glass sliding bars */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
@@ -236,7 +245,7 @@ const HeroSection = () => {
       <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-black/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center lg:items-stretch relative z-10 gap-12 lg:gap-0">
-        <div className="w-full lg:flex-1 text-center lg:text-left space-y-4 md:space-y-6 lg:space-y-8 order-2 lg:order-1 flex flex-col justify-center py-6 lg:py-16">
+        <div className="w-full lg:flex-1 text-center lg:text-left space-y-4 md:space-y-6 lg:space-y-8 order-2 lg:order-1 flex flex-col justify-center py-2 lg:py-6">
           <div className="space-y-3 lg:space-y-4">
             <span className="hero-badge inline-block bg-white/15 backdrop-blur-md text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-white/20">Custom Digital Art Studio</span>
             <h1 className="hero-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[0.95] tracking-tighter drop-shadow-lg">
@@ -253,17 +262,10 @@ const HeroSection = () => {
           <div className="hero-btns flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
             <a
               href="#gallery"
-              className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center"
+              className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center border-2 border-white"
             >
               Browse My Work
             </a>
-            <button
-              onClick={() => openWhatsApp('Hi! I\'m interested in getting a custom digital design.')}
-              className="bg-[#25D366] hover:bg-[#1ebe5d] text-white font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(37,211,102,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3 border-2 border-[#25D366]"
-            >
-              <WhatsAppIcon className="w-6 h-6" />
-              Message on WhatsApp
-            </button>
           </div>
 
           {/* Availability Badge */}
@@ -276,30 +278,26 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <div className="w-full lg:flex-1 flex justify-center lg:justify-end items-center order-1 lg:order-2 py-0 lg:py-16">
-          <div className="hero-video-wrap relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[440px] xl:max-w-[500px]">
-            <div className="aspect-[3/4] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
-              <video
-                src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                controls={false}
-                preload="auto"
-                fetchPriority="high"
-                onCanPlay={(e) => e.target.play()}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
-            </div>
-
-            {/* Floating WhatsApp Badge */}
-
-
-            {/* Decorative Elements (Desktop only) */}
-            <div className="hidden xl:block absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
+        <div className="w-full lg:flex-1 flex justify-center lg:justify-end items-center order-1 lg:order-2 py-0 lg:py-6">
+          <div className="aspect-[3/4] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
+            <video
+              ref={videoRef}
+              src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              fetchPriority="high"
+              onEnded={() => { if (videoRef.current) videoRef.current.play(); }}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
           </div>
+
+
+          {/* Decorative Elements (Desktop only) */}
+          <div className="hidden xl:block absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
         </div>
       </div>
     </section>
@@ -759,6 +757,76 @@ const FloatingWhatsApp = () => {
 
 // --- Main Page Component ---
 
+// --- Premium Scroll to Top Component with Progress ---
+const ScrollToTop = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Toggle visibility
+      setIsVisible(window.scrollY > 300);
+
+      // Calculate progress
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
+      setProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const circumference = 30 * 2 * Math.PI; // radius 30
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.5, y: 20 }}
+          className="fixed bottom-8 right-8 z-[90] pointer-events-auto"
+        >
+          <button
+            onClick={scrollToTop}
+            className="group relative w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-2xl transition-transform hover:scale-110 active:scale-95 border border-gray-100"
+          >
+            {/* SVG Progress Circle */}
+            <svg className="absolute inset-0 w-full h-full -rotate-90">
+              <circle
+                cx="32"
+                cy="32"
+                r="30"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                fill="transparent"
+                className="text-gray-100"
+              />
+              <motion.circle
+                cx="32"
+                cy="32"
+                r="30"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                fill="transparent"
+                strokeDasharray={circumference}
+                animate={{ strokeDashoffset: circumference - (progress / 100) * circumference }}
+                className="text-[#bf1e2e]"
+              />
+            </svg>
+            <ChevronUp className="w-6 h-6 text-[#bf1e2e] group-hover:-translate-y-1 transition-transform" />
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 export default function LandingPage({ templates, onStart }) {
   const [activeOccasion, setActiveOccasion] = useState('all');
   const [occasions, setOccasions] = useState([]);
@@ -963,7 +1031,7 @@ export default function LandingPage({ templates, onStart }) {
       </AnimatePresence>
 
       <Footer />
-      <FloatingWhatsApp />
+      <ScrollToTop />
 
       {/* Tailwind Utility for Marquee */}
       <style>{`

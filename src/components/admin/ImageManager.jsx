@@ -75,7 +75,11 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
       clearSelection();
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('Upload failed. Ensure the "images" collection exists with "file", "name", and "occasion" fields.');
+      if (err.message === 'PB_OFFLINE') {
+        alert('Connectivity Error: Admin Panel is currently disconnected from the PocketBase cloud. Please check your internet connection.');
+      } else {
+        alert('Upload Failed: Ensure your PocketBase "images" collection accepts "file", "name", and "occasion" fields, or check the console for field validation errors.');
+      }
     } finally {
       setIsUploading(false);
     }
