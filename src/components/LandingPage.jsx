@@ -279,7 +279,7 @@ const HeroSection = () => {
         </div>
 
         <div className="w-full lg:flex-1 flex justify-center lg:justify-end items-center order-1 lg:order-2 py-0 lg:py-6">
-          <div className="aspect-[3/4] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
+          <div className="aspect-[1/3] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
             <video
               ref={videoRef}
               src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
