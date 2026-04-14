@@ -98,7 +98,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
     }
   };
 
-  const isIdealRatio = dimensions && Math.abs(dimensions.ratio - 0.8) < 0.1;
+  const isIdealRatio = dimensions && Math.abs(dimensions.ratio - 0.67) < 0.05;
 
   return (
     <div className="flex flex-col gap-6 w-full pb-20">
@@ -198,13 +198,13 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
             </div>
             <div className="text-center">
               <p className="font-black text-xl text-gray-900 dark:text-white">Select invitation print</p>
-              <p className="text-gray-400 dark:text-gray-500 font-medium">Recommended size: 800x1000px (4:5 Ratio)</p>
+              <p className="text-gray-400 dark:text-gray-500 font-medium">Standard size: 20x30 inches (2:3 Ratio)</p>
             </div>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-8 items-start animate-in fade-in slide-in-from-bottom-4">
             {/* Visual Preview */}
-            <div className="w-full lg:w-[240px] aspect-[4/5] bg-gray-50 dark:bg-zinc-800 rounded-2xl overflow-hidden border-4 border-white dark:border-zinc-700 shadow-2xl relative group">
+            <div className="w-full lg:w-[240px] aspect-[2/3] bg-gray-50 dark:bg-zinc-800 rounded-2xl overflow-hidden border-4 border-white dark:border-zinc-700 shadow-2xl relative group">
                <img src={previewUrl} className="w-full h-full object-cover" />
                <button 
                  onClick={clearSelection}
@@ -225,7 +225,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Quality Check</p>
                     <div className="flex items-center gap-2">
                       <p className={`font-black text-lg ${isIdealRatio ? 'text-green-600' : 'text-amber-600'}`}>
-                        {isIdealRatio ? 'Perfect 4:5' : dimensions ? `Ratio: ${dimensions.ratio}` : '...'}
+                        {isIdealRatio ? 'Perfect 2:3' : dimensions ? `Ratio: ${dimensions.ratio}` : '...'}
                       </p>
                       {isIdealRatio && <CheckCircle className="w-5 h-5 text-green-500" />}
                     </div>
@@ -238,7 +238,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
                      <Upload className="w-4 h-4 text-amber-600" />
                    </div>
                    <p className="text-xs font-bold text-amber-800 leading-relaxed">
-                     This image isn't the ideal 4:5 ratio. It will be centered and cropped on the main storefront to maintain the design balance.
+                     This image isn't the ideal 2:3 ratio (20x30 inches). It will be centered and cropped on the main storefront to maintain the design balance.
                    </p>
                  </div>
                )}
@@ -295,7 +295,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {images.map((img) => (
-              <div key={img.id} className="group relative aspect-[3/4] bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-zinc-700">
+              <div key={img.id} className="group relative aspect-[2/3] bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-zinc-700">
                 <img 
                   src={pb.getFileUrl('images', img.id, img.file)} 
                   alt={img.name} 
@@ -317,7 +317,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
             {/* Add More Placeholder */}
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:text-[#1877f2] hover:border-[#1877f2] hover:bg-blue-50 transition-all"
+              className="aspect-[2/3] border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:text-[#1877f2] hover:border-[#1877f2] hover:bg-blue-50 transition-all"
             >
               <Plus className="w-8 h-8 mb-2" />
               <span className="text-sm font-bold">Add More</span>

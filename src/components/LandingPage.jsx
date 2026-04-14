@@ -279,7 +279,7 @@ const HeroSection = () => {
         </div>
 
         <div className="w-full lg:flex-1 flex justify-center lg:justify-end items-center order-1 lg:order-2 py-0 lg:py-6">
-          <div className="aspect-[1/3] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
+          <div className="aspect-[2/3] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
             <video
               ref={videoRef}
               src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
@@ -352,88 +352,18 @@ const CategoryCircles = ({ occasions, onSelect, activeId }) => {
 };
 
 const ProductCard = ({ item, onOpen }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleWhatsAppOrder = (e) => {
-    e.stopPropagation();
-    openWhatsApp(`Hi! I'm interested in this design: "${item.name}". Can you customize it for my event?`);
-  };
-
   return (
     <div
-      className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col border border-gray-100 h-full cursor-zoom-in"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-zoom-in border border-gray-100"
       onClick={() => onOpen(item)}
     >
-      <div className="aspect-[4/5] relative overflow-hidden bg-gray-50">
+      <div className="aspect-[2/3] relative overflow-hidden bg-gray-50">
         <img
           src={item.image_url}
           alt={item.name}
           loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-
-        {/* Overlay Tools */}
-        <AnimatePresence>
-          {isHovered && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-gradient-to-t from-[#bf1e2e]/80 via-black/40 to-black/20 flex flex-col items-center justify-center gap-3 p-4 backdrop-blur-[2px]"
-            >
-              <button
-                onClick={handleWhatsAppOrder}
-                className="w-full bg-white text-[#bf1e2e] font-black py-4 rounded-full shadow-xl transform transition-transform hover:scale-105 active:scale-95 text-sm uppercase tracking-tighter flex items-center justify-center gap-2"
-              >
-                <WhatsAppIcon className="w-5 h-5" />
-                Order This Design
-              </button>
-              <div
-                className="w-full bg-white/15 backdrop-blur-md text-white border border-white/30 font-black py-4 rounded-full shadow-xl hover:bg-white/25 transition-all text-sm uppercase tracking-tighter flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Maximize className="w-4 h-4" />
-                View Full Screen
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Wishlist Icon */}
-        <button
-          onClick={(e) => { e.stopPropagation(); }}
-          className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur rounded-full text-gray-400 hover:text-red-500 transition-colors shadow-lg z-10"
-        >
-          <Heart className="w-4 h-4" />
-        </button>
-
-        {/* Badge */}
-        <div className="absolute top-4 left-4 bg-[#bf1e2e] text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase shadow-lg z-10">Featured</div>
-      </div>
-
-      <div className="p-6 flex flex-col flex-1 justify-between gap-4">
-        <div className="space-y-1">
-          <h3 className="text-[17px] font-black leading-[1.2] text-gray-900 line-clamp-2 hover:text-[#bf1e2e] cursor-pointer transition-colors uppercase tracking-tighter">{item.name}</h3>
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />)}
-            <span className="text-[11px] font-bold text-gray-500 ml-1">Premium Quality</span>
-          </div>
-        </div>
-
-        <div className="flex items-end justify-between border-t border-gray-100 pt-4">
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Digital Print</span>
-            <span className="text-sm font-bold text-gray-400">Custom Pricing</span>
-          </div>
-          <button
-            onClick={handleWhatsAppOrder}
-            className="flex items-center gap-2 text-xs font-black text-[#bf1e2e] uppercase tracking-tighter group/more hover:scale-105 transition-transform"
-          >
-            <MessageCircle className="w-4 h-4" />
-            Enquire <ArrowRight className="w-3 h-3 transition-transform group-hover/more:translate-x-1" />
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -442,7 +372,6 @@ const ProductCard = ({ item, onOpen }) => {
 // --- Full Screen Lightbox Component ---
 const ImageLightbox = ({ item, onClose }) => {
   const [zoom, setZoom] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -459,62 +388,51 @@ const ImageLightbox = ({ item, onClose }) => {
     setZoom(prev => (prev === 1 ? 2.5 : 1));
   };
 
+  if (!item) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 md:p-12"
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/98 backdrop-blur-3xl overflow-hidden"
       onClick={onClose}
     >
-      {/* Navbar in Lightbox */}
-      <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-[1001] pointer-events-none">
-        <div className="text-white space-y-1">
-          <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter">{item.name}</h3>
-          <p className="text-xs text-white/50 font-bold uppercase tracking-widest">{zoom > 1 ? 'Drag to explore details' : 'Click image to zoom'}</p>
+      {/* Absolute Floating Close Button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
+        className="absolute top-6 right-6 flex flex-col items-center gap-2 group z-[2010] pointer-events-auto"
+        title="Close View"
+      >
+        <div className="w-14 h-14 bg-white/10 hover:bg-[#bf1e2e] text-white rounded-full flex items-center justify-center backdrop-blur-xl border border-white/10 transition-all shadow-2xl">
+          <X className="w-8 h-8 group-hover:scale-110 transition-transform" />
         </div>
-        <div className="flex gap-4 pointer-events-auto">
-          <button
-            onClick={toggleZoom}
-            className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
-            title="Toggle Zoom"
-          >
-            {zoom === 1 ? <ZoomIn className="w-6 h-6" /> : <ZoomOut className="w-6 h-6" />}
-          </button>
-          <button
-            onClick={onClose}
-            className="w-12 h-12 bg-[#bf1e2e] hover:bg-[#a01826] text-white rounded-full flex items-center justify-center shadow-lg transition-colors"
-            title="Close"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-      </div>
+        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">Close</span>
+      </button>
 
+      {/* Canvas Container */}
       <div
-        className={`relative w-full h-full flex items-center justify-center select-none ${zoom > 1 ? 'cursor-move' : 'cursor-zoom-in'}`}
+        className="w-full h-full flex items-center justify-center p-4 pb-20 md:pb-32"
         onClick={toggleZoom}
       >
         <motion.div
           animate={{ scale: zoom }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           drag={zoom > 1}
-          dragConstraints={{ left: -500, right: 500, top: -500, bottom: 500 }}
-          className="relative max-w-full max-h-full"
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={() => setIsDragging(false)}
+          dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }}
+          className={`relative max-w-full max-h-full flex items-center justify-center -translate-y-[6vh] ${zoom > 1 ? 'cursor-move' : 'cursor-zoom-in'}`}
         >
           <img
             src={item.image_url}
             alt={item.name}
-            className={`max-w-screen md:max-h-[85vh] rounded-lg shadow-2xl pointer-events-none transition-shadow ${zoom > 1 ? 'shadow-[0_0_100px_rgba(0,0,0,0.5)]' : ''}`}
+            className="max-w-[92vw] max-h-[88vh] w-auto h-auto object-contain rounded-sm shadow-[0_40px_100px_-20px_rgba(0,0,0,0.9)] border border-white/5 pointer-events-none"
           />
         </motion.div>
       </div>
 
-      {/* Zoom Helper Badge */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/10 text-white/70 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/10 pointer-events-none">
-        {zoom === 1 ? 'Double Tap to Zoom' : 'Drag to Move'}
+      {/* Floating Instructions */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white/50 px-5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/5 pointer-events-none">
+        {zoom === 1 ? 'Tap to Zoom' : 'Drag to explore'}
       </div>
     </motion.div>
   );
@@ -968,14 +886,14 @@ export default function LandingPage({ templates, onStart }) {
             />
 
             {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                  <div key={i} className="bg-gray-200 animate-pulse aspect-[4/5] rounded-xl" />
+                  <div key={i} className="bg-gray-200 animate-pulse aspect-[2/3] rounded-xl" />
                 ))}
               </div>
             ) : filteredImages.length > 0 ? (
               <>
-                <div className={`grid gap-8 ${filteredImages.length === 1 ? 'grid-cols-1 max-w-sm mx-auto' : filteredImages.length === 2 ? 'grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto' : filteredImages.length === 3 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto">
                   <AnimatePresence mode="popLayout">
                     {displayedImages.map((img, idx) => (
                       <motion.div
@@ -985,7 +903,7 @@ export default function LandingPage({ templates, onStart }) {
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.5, delay: (idx % 8) * 0.05 }}
                       >
-                        <ProductCard item={img} />
+                        <ProductCard item={img} onOpen={(item) => setActiveImage(item)} />
                       </motion.div>
                     ))}
                   </AnimatePresence>
