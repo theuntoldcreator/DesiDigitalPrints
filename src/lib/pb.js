@@ -25,9 +25,47 @@ export const pb = {
   _eventSource: null,
   _subscribers: {},
 
+  // Lightweight AuthStore
+  authStore: {
+    token: localStorage.getItem('pb_auth_token') || '',
+    model: JSON.parse(localStorage.getItem('pb_auth_model') || 'null'),
+    get isValid() { return !!this.token },
+    save(token, model) {
+      this.token = token;
+      this.model = model;
+      localStorage.setItem('pb_auth_token', token);
+      localStorage.setItem('pb_auth_model', JSON.stringify(model));
+    },
+    clear() {
+      this.token = '';
+      this.model = null;
+      localStorage.removeItem('pb_auth_token');
+      localStorage.removeItem('pb_auth_model');
+    }
+  },
+
+  // Admin Auth Implementation
+  admins: {
+    async authWithPassword(email, password) {
+      const res = await fetch(`${PB_URL}/api/admins/auth-with-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identity: email, password })
+      });
+      if (!res.ok) throw new Error('AUTH_FAILED');
+      const data = await res.json();
+      pb.authStore.save(data.token, data.admin);
+      return data;
+    }
+  },
+
   async healthCheck() {
     try {
-      const res = await fetch(`${PB_URL}/api/health`, { method: 'GET', signal: AbortSignal.timeout(3000) });
+      // Shorter timeout for faster failover
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), 2000);
+      const res = await fetch(`${PB_URL}/api/health`, { method: 'GET', signal: controller.signal });
+      clearTimeout(id);
       return res.ok;
     } catch {
       return false;

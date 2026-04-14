@@ -3,65 +3,85 @@ import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 
 export default function AdminLogin({ onLogin }) {
-  const [pin, setPin] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (pin === '1234') {
-      const sessionData = {
-        isLoggedIn: true,
-        loginTime: Date.now()
-      };
-      localStorage.setItem('admin_session', JSON.stringify(sessionData));
+    setLoading(true);
+    setError('');
+    
+    try {
+      await pb.admins.authWithPassword(email, password);
       onLogin();
-    } else {
-      setError('Invalid PIN. Please try again.');
-      setPin('');
+    } catch (err) {
+      setError('Invalid email or password. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[#f0f2f5] flex flex-col items-center justify-center font-sans">
-      <div className="w-full max-w-[400px] text-center mb-10 flex flex-col items-center">
-        <div className="w-32 h-32 rounded-full overflow-hidden shadow-[0_20px_50px_rgba(191,30,46,0.3)] mb-6 bg-white border-4 border-white transform hover:scale-105 transition-all">
+      <div className="w-full max-w-[440px] text-center mb-8 flex flex-col items-center">
+        <div className="w-24 h-24 rounded-full overflow-hidden shadow-2xl mb-4 bg-white border-2 border-white transform hover:rotate-3 transition-all">
            <img src="/images/logo.png" alt="Desi Prints Logo" className="w-full h-full object-cover scale-110" />
         </div>
-        <h1 className="text-[#bf1e2e] text-6xl font-black tracking-tighter mb-4 drop-shadow-sm">DesiPrints</h1>
-        <p className="text-xl text-gray-700 leading-tight px-4">
-          Admin Dashboard Management for Your Digital Invitation Store.
-        </p>
+        <h1 className="text-[#bf1e2e] text-4xl font-black tracking-tighter mb-2">Digital Admin</h1>
+        <p className="text-sm text-gray-500 font-bold uppercase tracking-widest">Premium Management Portal</p>
       </div>
 
       <motion.div 
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-white p-6 rounded-xl shadow-xl w-full max-w-[400px] border border-gray-100"
+        className="bg-white p-8 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] w-full max-w-[440px] border border-gray-100"
       >
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-          <div className="w-12 h-12 rounded-full overflow-hidden shadow-md bg-white border border-gray-100">
-            <img src="/images/logo.png" alt="Logo" className="w-full h-full object-cover scale-110" />
-          </div>
-            <h2 className="text-xl font-semibold">Enter Admin PIN</h2>
+        <form onSubmit={handleLogin} className="flex flex-col gap-6">
+          <div className="space-y-4">
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Admin Email</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@example.com"
+                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#bf1e2e] focus:bg-white transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Password</label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#bf1e2e] focus:bg-white transition-all"
+              />
+            </div>
           </div>
 
-          <input
-            type="password"
-            maxLength={4}
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            placeholder="Enter 4-digit PIN"
-            className="w-full p-3 border border-gray-300 rounded-lg text-center text-2xl tracking-[0.5em] focus:outline-none focus:border-[#1877f2] focus:ring-1 focus:ring-[#1877f2]"
-          />
-
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {error && (
+            <motion.p 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-[#bf1e2e] text-xs font-bold text-center bg-red-50 p-3 rounded-lg"
+            >
+              {error}
+            </motion.p>
+          )}
 
           <button
             type="submit"
-            className="w-full bg-[#1877f2] text-white py-3 rounded-lg text-xl font-bold hover:bg-[#166fe5] transition-colors"
+            disabled={loading}
+            className="w-full bg-black text-white py-4 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-[#bf1e2e] transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            Log In
+            {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
           </button>
 
           <div className="border-t border-gray-200 mt-4 pt-4 text-center">

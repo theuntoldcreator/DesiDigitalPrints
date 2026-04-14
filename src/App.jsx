@@ -14,23 +14,22 @@ function App() {
   useEffect(() => {
     // Fetch prebuilt templates from PocketBase
     pb.getFullList('templates')
-      .then(data => setTemplates(data))
-      .catch(err => console.error('Error fetching templates from PB:', err));
+      .then(data => {
+        if (data) setTemplates(data);
+      })
+      .catch(err => {
+        console.warn('[App] Templates load failed, using fallback static data:', err);
+        // Fallback or empty state already handled by default []
+      });
 
-    // Check for existing admin session
-    const session = JSON.parse(localStorage.getItem('admin_session'));
-    if (session && session.isLoggedIn) {
-      const hoursSinceLogin = (Date.now() - session.loginTime) / (1000 * 60 * 60);
-      if (hoursSinceLogin < 1) {
-        setIsAdminLoggedIn(true);
-      } else {
-        localStorage.removeItem('admin_session');
-      }
+    // Check for existing admin session via PB AuthStore
+    if (pb?.authStore?.isValid && pb?.authStore?.model?.email) {
+      setIsAdminLoggedIn(true);
     }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_session');
+    pb.authStore.clear();
     setIsAdminLoggedIn(false);
   };
 

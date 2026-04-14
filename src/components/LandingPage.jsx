@@ -1,6 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { pb } from '../lib/pb';
 import {
@@ -9,17 +7,23 @@ import {
   Clock, Star, ArrowRight, ShieldCheck,
   CheckCircle, Phone, Sparkles, Palette, Send,
   X, ZoomIn, ZoomOut, Maximize, MousePointer2,
-  ChevronUp
+  ChevronUp, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+
 
 const WHATSAPP_NUMBER = '919030811329';
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}`;
 
-const openWhatsApp = (message = '') => {
-  const url = message
-    ? `${WHATSAPP_LINK}?text=${encodeURIComponent(message)}`
-    : WHATSAPP_LINK;
+const openWhatsApp = (message = '', activeOccasion = 'all') => {
+  let defaultMsg = 'Hi! I saw your portfolio and I\'m interested in your designs! 🎨';
+  if (activeOccasion !== 'all' && !message) {
+    defaultMsg = `Hi! I'm interested in your ${activeOccasion} collection designs! 🎨`;
+  }
+
+  const finalMsg = message || defaultMsg;
+  const url = `${WHATSAPP_LINK}?text=${encodeURIComponent(finalMsg)}`;
   window.open(url, '_blank');
 };
 
@@ -45,7 +49,7 @@ const Instagram = () => (
     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
   </svg>
 );
-const Twitter = () => <SocialIcon d="M22 4s-1 2.17-2.67 2.17a5.55 5.55 0 0 1-5 4c0 0-4.17.67-6.17-2.17 0 0-1.5 4.17 2 7 0 0-2.33 1.33-4 1.33 0 0 4.17 3.5 11 0 0 0-6.17-10 0 0-4.17-1 4.17-6.17-1.17 0 0 1.5 2.17 3 2.17L22 4z" />;
+const Twitter = () => <SocialIcon d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />;
 
 const PromoBar = () => {
   const messages = [
@@ -70,7 +74,7 @@ const PromoBar = () => {
         <div className="hidden lg:flex gap-6 shrink-0">
           <a href="#gallery" className="hover:text-white/80 transition-colors">Browse Gallery</a>
           <a href="#how-it-works" className="hover:text-white/80 transition-colors">How It Works</a>
-          <span className="text-green-300 cursor-pointer hover:text-green-200 transition-colors" onClick={() => openWhatsApp()}>WhatsApp Us</span>
+          <span className="text-white hover:text-white/70 cursor-pointer transition-colors" onClick={() => openWhatsApp()}>WhatsApp Us</span>
         </div>
 
         {/* Center Vertical Notifications */}
@@ -106,63 +110,92 @@ const PromoBar = () => {
 };
 
 const MainHeader = ({ searchQuery, setSearchQuery }) => {
-  const navigate = useNavigate();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (isSearchOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
   return (
     <header className="bg-white sticky top-0 z-[100] shadow-sm w-full">
-      <div className="container mx-auto px-4 md:px-12 py-5 flex items-center gap-4 lg:gap-12">
-        {/* Mobile Menu Icon */}
-        <button className="lg:hidden p-2 text-gray-600">
-          <Menu className="w-6 h-6" />
-        </button>
-
-        {/* Brand Logo */}
+      <div className="container mx-auto px-6 md:px-12 py-3 flex items-center justify-between gap-4">
+        {/* Simplified Brand Logo */}
         <div
           className="flex items-center gap-3 cursor-pointer shrink-0"
           onClick={() => window.location.href = '/'}
         >
-          <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-full overflow-hidden shadow-[0_0_20px_rgba(191,30,46,0.2)] border-2 border-gray-50 transform hover:rotate-3 transition-all">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full overflow-hidden shadow-md border border-gray-100 transform hover:rotate-3 transition-all">
             <img src="/images/logo.png" alt="Desi Logo" className="w-full h-full object-cover scale-110" />
           </div>
-          <div className="hidden xl:flex flex-col leading-none">
-            <span className="text-2xl md:text-3xl font-black tracking-tighter text-gray-900">Digital Prints</span>
-            <span className="text-[11px] font-black text-[#bf1e2e] uppercase tracking-[0.2em]">Premium Digital Studio</span>
+          <div className="hidden sm:flex flex-col leading-none">
+            <span className="text-lg md:text-xl font-black tracking-tighter text-gray-900 line-clamp-1">Digital Prints</span>
+            <span className="text-[8px] md:text-[9px] font-black text-[#bf1e2e] uppercase tracking-widest">Premium Studio</span>
           </div>
         </div>
 
-        {/* Global Search */}
-        <div className="flex-1 relative group max-w-2xl lg:max-w-3xl mx-auto">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#bf1e2e] transition-colors">
-            <Search className="w-5 h-5" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search designs & collections..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-11 md:h-12 bg-gray-50 rounded-full pl-12 pr-4 text-gray-800 outline-none border border-gray-100 focus:border-[#bf1e2e]/30 focus:bg-white transition-all font-medium shadow-inner"
-          />
-          <button className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-[#bf1e2e] p-2.5 rounded-full text-white hover:bg-[#a01826] transition-all shadow-md active:scale-95">
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        {/* Minimalist Search Expansion */}
+        <div className="flex-1 flex justify-center max-w-xl">
+          <AnimatePresence>
+            {isSearchOpen ? (
+              <motion.div
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: '100%', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                className="relative flex items-center w-full"
+              >
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Search designs..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-10 bg-gray-50 rounded-full pl-5 pr-12 text-sm font-medium border border-gray-100 focus:border-[#bf1e2e]/30 focus:bg-white transition-all outline-none"
+                />
+                <button
+                  onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                  className="absolute right-2 p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </motion.div>
+            ) : (
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2.5 text-gray-400 hover:text-[#bf1e2e] transition-colors group flex items-center gap-2"
+              >
+                <Search className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                <span className="hidden lg:inline text-[10px] font-black uppercase tracking-widest text-gray-300">Find Design</span>
+              </button>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* WhatsApp CTA */}
-        <div className="flex items-center gap-1 md:gap-4 shrink-0">
-          <button
-            onClick={() => openWhatsApp('Hi! I saw your portfolio and I\'m interested in your digital design services.')}
-            className="hidden sm:flex flex-col items-center hover:text-[#25D366] transition-colors group"
-          >
-            <WhatsAppIcon className="w-6 h-6 group-hover:scale-110 transition-transform" />
-            <span className="text-[10px] font-bold uppercase mt-1">Chat</span>
-          </button>
-          <button
-            onClick={() => openWhatsApp('Hi! I saw your portfolio and I\'m interested in your digital design services.')}
-            className="flex items-center gap-2 bg-[#25D366] text-white font-black px-4 md:px-6 py-2.5 md:py-3 rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all text-xs md:text-sm uppercase tracking-tighter"
-          >
-            <MessageCircle className="w-4 h-4" />
-            <span className="hidden md:inline">Order Now</span>
-            <span className="md:hidden">Chat</span>
-          </button>
+        {/* Minimalist Interlocking Social Actions */}
+        <div className="flex items-center gap-4 shrink-0">
+          <span className="hidden lg:inline text-xs font-black uppercase tracking-widest text-gray-400">Let's Talk</span>
+          <div className="flex items-center -space-x-3 group cursor-pointer">
+            {/* Instagram Button with Perfect Gradient */}
+            <a
+              href="https://instagram.com/desi.digital.prints"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white rounded-full flex items-center justify-center shadow-lg hover:z-10 hover:scale-110 active:scale-95 transition-all"
+              title="Follow on Instagram"
+            >
+              <Instagram className="w-5 h-5 md:w-6 md:h-6" />
+            </a>
+            {/* WhatsApp Button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); openWhatsApp(); }}
+              className="w-10 h-10 md:w-12 md:h-12 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:z-10 hover:scale-110 active:scale-95 transition-all"
+              title="Chat on WhatsApp"
+            >
+              <WhatsAppIcon className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+          </div>
         </div>
       </div>
     </header>
@@ -196,9 +229,7 @@ const NavigationBar = ({ occasions, activeOccasion, onSelect }) => {
 };
 
 const HeroSection = () => {
-  const heroRef = useRef(null);
   const videoRef = useRef(null);
-
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = true;
@@ -206,22 +237,8 @@ const HeroSection = () => {
     }
   }, []);
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power2.out', force3D: true } });
-      tl.from('.hero-badge', { opacity: 0, y: 15, duration: 0.2 })
-        .from('.hero-heading', { opacity: 0, y: 20, duration: 0.3 }, '-=0.1')
-        .from('.hero-desc', { opacity: 0, y: 15, duration: 0.2 }, '-=0.2')
-        .from('.hero-btns > *', { opacity: 0, y: 10, stagger: 0.05, duration: 0.2 }, '-=0.15')
-        .from('.hero-avail', { opacity: 0, x: -10, duration: 0.2 }, '-=0.15')
-        .from('.hero-video-wrap', { opacity: 0, scale: 0.98, duration: 0.4 }, '-=0.3')
-        .from('.hero-phone-badge', { opacity: 0, y: 15, duration: 0.2 }, '-=0.2');
-    }, heroRef);
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={heroRef} className="relative w-full min-h-[calc(100vh-80px)] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center pt-[60px] sm:pt-[70px] lg:pt-[56px] pb-6 lg:pb-0">
+    <section className="relative w-full min-h-[calc(100vh-80px)] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center pt-[60px] sm:pt-[70px] lg:pt-[56px] pb-6 lg:pb-0">
       {/* Animated glass sliding bars */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
@@ -247,34 +264,30 @@ const HeroSection = () => {
       <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center lg:items-stretch relative z-10 gap-12 lg:gap-0">
         <div className="w-full lg:flex-1 text-center lg:text-left space-y-4 md:space-y-6 lg:space-y-8 order-2 lg:order-1 flex flex-col justify-center py-2 lg:py-6">
           <div className="space-y-3 lg:space-y-4">
-            <span className="hero-badge inline-block bg-white/15 backdrop-blur-md text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-white/20">Custom Digital Art Studio</span>
-            <h1 className="hero-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[0.95] tracking-tighter drop-shadow-lg">
-              Your <br /> <span className="relative">
-                Special Moment
-                <div className="absolute bottom-0 left-0 w-full h-3 bg-white/15 -z-10 -rotate-1" />
-                <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-white/40" />
-              </span> <br /> Designed.
+            <h1 className="hero-heading text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight tracking-tighter drop-shadow-xl max-w-2xl">
+              Designs That Bring Every Idea to Life
             </h1>
           </div>
-          <p className="hero-desc text-xl text-white/80 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed">
-            Premium digital invitations, welcome boards & event art — crafted with love. Browse my work, pick a design you love, and message me on WhatsApp to bring it to life.
+          <p className="hero-desc text-lg md:text-xl text-white/80 font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed italic">
+            "From luxury invitations and event boards to social media creatives and custom graphics — explore premium designs crafted for every occasion and brand. Browse our work, choose your style, and connect on WhatsApp to get started."
           </p>
           <div className="hero-btns flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
             <a
               href="#gallery"
               className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center border-2 border-white"
             >
-              Browse My Work
+              Explore Designs
             </a>
           </div>
 
-          {/* Availability Badge */}
-          <div className="hero-avail flex items-center gap-3 justify-center lg:justify-start pt-2">
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full">
+          {/* Availability & Studio Badge Row */}
+          <div className="hero-avail flex flex-wrap items-center gap-3 justify-center lg:justify-start pt-2">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full shadow-sm">
               <div className="w-2.5 h-2.5 bg-[#25D366] rounded-full animate-pulse shadow-[0_0_8px_#25D366]" />
               <span className="text-xs font-black text-white uppercase tracking-wider">Available 24/7</span>
             </div>
-            <span className="text-sm font-bold text-white/50">Instant replies</span>
+            <span className="text-sm font-bold text-white/50 hidden md:inline">•</span>
+            <span className="hero-badge bg-white/15 backdrop-blur-md text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-white/20">Custom Digital Art Studio</span>
           </div>
         </div>
 
@@ -305,24 +318,8 @@ const HeroSection = () => {
 };
 
 const CategoryCircles = ({ occasions, onSelect, activeId }) => {
-  const catRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.cat-heading', {
-        opacity: 0, y: 20, duration: 0.2, ease: 'power2.out', force3D: true,
-        scrollTrigger: { trigger: '.cat-heading', start: 'top 95%', once: true }
-      });
-      gsap.from('.cat-circle', {
-        opacity: 0, y: 15, scale: 0.98, stagger: 0.05, duration: 0.2, ease: 'power2.out', force3D: true,
-        scrollTrigger: { trigger: '.cat-circles-wrap', start: 'top 95%', once: true }
-      });
-    }, catRef);
-    return () => ctx.revert();
-  }, [occasions]);
-
   return (
-    <div ref={catRef} className="py-16 md:py-24 bg-white overflow-hidden">
+    <div className="py-16 md:py-24 bg-white overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="cat-heading text-center mb-12 space-y-3">
           <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Collections</div>
@@ -369,24 +366,23 @@ const ProductCard = ({ item, onOpen }) => {
   );
 };
 
-// --- Full Screen Lightbox Component ---
-const ImageLightbox = ({ item, onClose }) => {
-  const [zoom, setZoom] = useState(1);
-
+// --- Advanced Navigation Lightbox (Premium Gallery Style) ---
+const ImageLightbox = ({ item, onClose, onNext, onPrev }) => {
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    const handleEsc = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handleEsc);
+    
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight' && onNext) onNext();
+      if (e.key === 'ArrowLeft' && onPrev) onPrev();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
       document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleEsc);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onClose]);
-
-  const toggleZoom = (e) => {
-    e.stopPropagation();
-    setZoom(prev => (prev === 1 ? 2.5 : 1));
-  };
+  }, [onClose, onNext, onPrev]);
 
   if (!item) return null;
 
@@ -395,73 +391,92 @@ const ImageLightbox = ({ item, onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/98 backdrop-blur-3xl overflow-hidden"
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/95 backdrop-blur-2xl px-4 md:px-20"
       onClick={onClose}
     >
-      {/* Absolute Floating Close Button */}
+      {/* Background Dim (Click to close) */}
+      <div className="absolute inset-0 cursor-zoom-out" />
+
+      {/* Floating Close Button */}
       <button
-        onClick={(e) => { e.stopPropagation(); onClose(); }}
-        className="absolute top-6 right-6 flex flex-col items-center gap-2 group z-[2010] pointer-events-auto"
-        title="Close View"
+        onClick={onClose}
+        className="fixed top-8 right-8 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-2xl z-[2050] hover:bg-[#bf1e2e] hover:text-white transition-all group active:scale-95"
       >
-        <div className="w-14 h-14 bg-white/10 hover:bg-[#bf1e2e] text-white rounded-full flex items-center justify-center backdrop-blur-xl border border-white/10 transition-all shadow-2xl">
-          <X className="w-8 h-8 group-hover:scale-110 transition-transform" />
-        </div>
-        <span className="text-[10px] font-black text-white/40 uppercase tracking-widest group-hover:text-white transition-colors">Close</span>
+        <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
       </button>
 
-      {/* Canvas Container */}
-      <div
-        className="w-full h-full flex items-center justify-center p-4 pb-20 md:pb-32"
-        onClick={toggleZoom}
-      >
-        <motion.div
-          animate={{ scale: zoom }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          drag={zoom > 1}
-          dragConstraints={{ left: -1000, right: 1000, top: -1000, bottom: 1000 }}
-          className={`relative max-w-full max-h-full flex items-center justify-center -translate-y-[6vh] ${zoom > 1 ? 'cursor-move' : 'cursor-zoom-in'}`}
+      {/* Navigation Arrows (Desktop Only Overlay) */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-6 pointer-events-none z-[2040]">
+        <button
+          onClick={(e) => { e.stopPropagation(); onPrev(); }}
+          className="w-16 h-16 bg-white/5 hover:bg-white text-white hover:text-black rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-all pointer-events-auto shadow-2xl group active:scale-90"
         >
-          <img
-            src={item.image_url}
-            alt={item.name}
-            className="max-w-[92vw] max-h-[88vh] w-auto h-auto object-contain rounded-sm shadow-[0_40px_100px_-20px_rgba(0,0,0,0.9)] border border-white/5 pointer-events-none"
-          />
-        </motion.div>
+          <ChevronLeft className="w-8 h-8 group-hover:-translate-x-1 transition-transform" />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onNext(); }}
+          className="w-16 h-16 bg-white/5 hover:bg-white text-white hover:text-black rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-all pointer-events-auto shadow-2xl group active:scale-90"
+        >
+          <ChevronRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
 
-      {/* Floating Instructions */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/60 text-white/50 px-5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/5 pointer-events-none">
-        {zoom === 1 ? 'Tap to Zoom' : 'Drag to explore'}
-      </div>
+      {/* Modal Container */}
+      <motion.div
+        key={item.id}
+        initial={{ opacity: 0, x: 20, scale: 0.95 }}
+        animate={{ opacity: 1, x: 0, scale: 1 }}
+        exit={{ opacity: 0, x: -20, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative z-[2010] flex flex-col items-center justify-center w-full h-full"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Main Exhibit Frame */}
+        <div className="flex flex-col items-center justify-center max-w-full max-h-full">
+          <div className="relative group">
+            <img
+              src={item.image_url}
+              alt={item.name}
+              className="max-w-[90vw] max-h-[60vh] md:max-h-[70vh] w-auto h-auto object-contain rounded-xl shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] border-[8px] md:border-[16px] border-white transition-transform hover:scale-[1.01] duration-500"
+            />
+            
+            {/* Mobile Navigation (Swipe Hints) */}
+            <div className="absolute inset-y-0 left-0 w-1/4 flex md:hidden items-center justify-start pl-4" onClick={onPrev}>
+               <ChevronLeft className="w-8 h-8 text-white/30" />
+            </div>
+            <div className="absolute inset-y-0 right-0 w-1/4 flex md:hidden items-center justify-end pr-4" onClick={onNext}>
+               <ChevronRight className="w-8 h-8 text-white/30" />
+            </div>
+          </div>
+          
+          {/* Studio Info Bar */}
+          <div className="mt-8 md:mt-12 bg-white px-8 md:px-14 py-6 rounded-[32px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-white/20 flex flex-col md:flex-row items-center gap-6 md:gap-12 min-w-[320px] max-w-[95vw]">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{item.name}</h3>
+              <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
+                 <span className="text-[10px] font-black text-[#bf1e2e] uppercase tracking-[0.2em] px-2 py-0.5 bg-[#bf1e2e]/5 rounded-full">Pro Edition</span>
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Handcrafted Studio Art</p>
+              </div>
+            </div>
+            <div className="hidden md:block h-12 w-px bg-gray-100" />
+            <button
+              onClick={() => openWhatsApp(`Hi! I'm interested in ordering the "${item.name}" design from your premium collection! ✨`)}
+              className="bg-[#25D366] text-white px-10 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-[#128C7E] transition-all flex items-center gap-3 shadow-[0_15px_30px_rgba(37,211,102,0.4)] active:scale-95 whitespace-nowrap group/wa"
+            >
+              <WhatsAppIcon className="w-6 h-6 transition-transform group-hover/wa:scale-110" />
+              Get Quote on WhatsApp
+            </button>
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
 
 // --- How It Works Section ---
 const HowItWorks = () => {
-  const howRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.hiw-heading', {
-        opacity: 0, y: 20, duration: 0.2, ease: 'power2.out', force3D: true,
-        scrollTrigger: { trigger: '.hiw-heading', start: 'top 95%', once: true }
-      });
-      gsap.from('.hiw-step', {
-        opacity: 0, y: 20, stagger: 0.05, duration: 0.2, ease: 'power2.out', force3D: true,
-        scrollTrigger: { trigger: '.hiw-steps', start: 'top 90%', once: true }
-      });
-      gsap.from('.hiw-cta', {
-        opacity: 0, y: 10, duration: 0.2, ease: 'power2.out', force3D: true,
-        scrollTrigger: { trigger: '.hiw-cta', start: 'top 95%', once: true }
-      });
-    }, howRef);
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={howRef} id="how-it-works" className="py-24 bg-gradient-to-b from-white to-[#fff5f5] scroll-mt-36">
+    <section id="how-it-works" className="py-24 bg-gradient-to-b from-white to-[#fff5f5] scroll-mt-36">
       <div className="container mx-auto px-6">
         <div className="hiw-heading text-center mb-16 space-y-4">
           <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Simple Process</div>
@@ -509,20 +524,8 @@ const HowItWorks = () => {
 
 // --- Contact CTA Banner --- 
 const WhatsAppBanner = () => {
-  const bannerRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from('.banner-content', {
-        opacity: 0, y: 30, scale: 0.99, duration: 0.3, ease: 'power2.out', force3D: true,
-        scrollTrigger: { trigger: bannerRef.current, start: 'top 95%', once: true }
-      });
-    }, bannerRef);
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={bannerRef} className="py-20 bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
@@ -561,23 +564,23 @@ const WhatsAppBanner = () => {
   );
 };
 
-const Footer = () => (
-  <footer className="bg-[#222] text-white pt-20 pb-10 px-8">
+const Footer = ({ occasions, onSelect }) => (
+  <footer className="bg-[#111] text-white pt-20 pb-10 px-8">
     <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12 border-b border-white/10 pb-20">
       <div className="lg:col-span-2 space-y-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-white rounded-full overflow-hidden p-1 shadow-lg border-2 border-[#bf1e2e]">
             <img src="/images/logo.png" className="w-full h-full object-cover rounded-full" alt="Logo" />
           </div>
-          <span className="text-4xl font-black tracking-tighter">Desi Digital Prints</span>
+          <span className="text-4xl font-black tracking-tighter">Digital Prints</span>
         </div>
         <p className="text-gray-400 text-sm leading-relaxed font-medium">
-          Premium digital invitations, welcome boards & event designs crafted with love. Browse my portfolio and message me on WhatsApp to get your custom design.
+          Premium digital invitations, luxury welcome boards & bespoke event art — hand-crafted to elevate your celebration. Click below to chat directly with us.
         </p>
 
         {/* WhatsApp Contact */}
         <div
-          onClick={() => openWhatsApp()}
+          onClick={() => openWhatsApp('Hi! I\'d like to discuss a custom design project.')}
           className="inline-flex items-center gap-3 bg-[#25D366]/10 border border-[#25D366]/20 px-5 py-3 rounded-2xl cursor-pointer hover:bg-[#25D366]/20 transition-all group"
         >
           <WhatsAppIcon className="w-6 h-6 text-[#25D366] group-hover:scale-110 transition-transform" />
@@ -588,28 +591,49 @@ const Footer = () => (
         </div>
 
         <div className="flex gap-4 pt-2">
-          <Instagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+          <a href="https://instagram.com/desi.digital.prints" target="_blank" rel="noreferrer">
+            <Instagram className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
+          </a>
           <Facebook className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
           <Twitter className="w-6 h-6 text-gray-400 hover:text-white cursor-pointer" />
         </div>
       </div>
 
-      {[
-        { title: 'Services', links: ['Wedding Invitations', 'Birthday Cards', 'Welcome Boards', 'Save the Dates', 'Event Posters'] },
-        { title: 'Quick Links', links: ['Browse Gallery', 'How It Works', 'About the Artist', 'Custom Orders'] },
-        { title: 'Contact', links: ['WhatsApp: +91 9030811329', 'Available 24/7', 'Custom Requests Welcome', 'Fast Turnaround'] }
-      ].map((col, idx) => (
-        <div key={idx} className="space-y-6">
-          <h4 className="text-sm font-black uppercase tracking-widest text-[#bf1e2e]">{col.title}</h4>
-          <ul className="space-y-4">
-            {col.links.map((link, lIdx) => (
-              <li key={lIdx} className="text-sm text-gray-400 hover:text-white cursor-pointer font-medium transition-colors">
-                {link}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div className="space-y-6">
+        <h4 className="text-sm font-black uppercase tracking-widest text-[#bf1e2e]">Categories</h4>
+        <ul className="space-y-4">
+          {occasions.slice(0, 5).map(occ => (
+            <li
+              key={occ.id}
+              onClick={() => onSelect(occ)}
+              className="text-sm text-gray-400 hover:text-white cursor-pointer font-medium transition-colors"
+            >
+              {occ.name}
+            </li>
+          ))}
+          <li onClick={() => onSelect({ id: 'all' })} className="text-sm text-[#bf1e2e] hover:text-white cursor-pointer font-black uppercase tracking-widest">View All</li>
+        </ul>
+      </div>
+
+      <div className="space-y-6">
+        <h4 className="text-sm font-black uppercase tracking-widest text-[#bf1e2e]">Quick Links</h4>
+        <ul className="space-y-4">
+          <li onClick={() => document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' })} className="text-sm text-gray-400 hover:text-white cursor-pointer font-medium transition-colors">Browse Gallery</li>
+          <li onClick={() => document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' })} className="text-sm text-gray-400 hover:text-white cursor-pointer font-medium transition-colors">How It Works</li>
+          <li onClick={() => openWhatsApp('Hi! I\'d like to place a custom order.')} className="text-sm text-gray-400 hover:text-white cursor-pointer font-medium transition-colors">Custom Orders</li>
+          <li onClick={() => openWhatsApp('Hi! I have a question about your services.')} className="text-sm text-gray-400 hover:text-white cursor-pointer font-medium transition-colors">Support</li>
+        </ul>
+      </div>
+
+      <div className="space-y-6">
+        <h4 className="text-sm font-black uppercase tracking-widest text-[#bf1e2e]">Contact</h4>
+        <ul className="space-y-4">
+          <li className="text-sm text-gray-400 font-medium">WhatsApp: +91 9030811329</li>
+          <li className="text-sm text-gray-400 font-medium italic">Available 24/7</li>
+          <li className="text-sm text-gray-400 font-medium">Bespoke Requests Welcome</li>
+          <li className="text-sm text-gray-400 font-medium">Fast Turnaround</li>
+        </ul>
+      </div>
     </div>
 
     <div className="container mx-auto pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
@@ -660,7 +684,7 @@ const FloatingWhatsApp = () => {
         )}
       </AnimatePresence>
       <button
-        onClick={() => openWhatsApp('Hi! I visited your website and I\'m interested in your designs! 🎨')}
+        onClick={() => openWhatsApp()}
         className="w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_8px_24px_rgba(37,211,102,0.4)] hover:scale-110 active:scale-95 transition-all group relative"
         title="Chat on WhatsApp"
       >
@@ -755,10 +779,6 @@ export default function LandingPage({ templates, onStart }) {
   const [activeImage, setActiveImage] = useState(null);
   const galleryRef = useRef(null);
 
-  useLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-  }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -769,19 +789,25 @@ export default function LandingPage({ templates, onStart }) {
 
         setOccasions(occData || []);
 
-        const staticTemplates = (templates || []).map(t => ({
-          id: `t-${t.id}`,
-          image_url: t.thumbnailUrl,
-          name: t.name,
-          template: t,
-          occasion_id: 'all' // Templates show everywhere by default or can be categorized
-        }));
+        const staticTemplates = (templates || []).map(t => {
+          if (!t) return null;
+          return {
+            id: `t-${t.id}`,
+            image_url: t.thumbnailUrl || '',
+            name: t.name || 'Untitled Design',
+            template: t,
+            occasion_id: 'all'
+          };
+        }).filter(Boolean);
 
-        const formattedUploads = (uploadedData || []).map(img => ({
-          ...img,
-          image_url: pb.getFileUrl('images', img.id, img.file),
-          occasion_id: img.occasion
-        }));
+        const formattedUploads = (uploadedData || []).map(img => {
+          if (!img) return null;
+          return {
+            ...img,
+            image_url: img.file ? pb.getFileUrl('images', img.id, img.file) : '',
+            occasion_id: img.occasion || 'all'
+          };
+        }).filter(Boolean);
 
         const unifiedImages = [...formattedUploads, ...staticTemplates];
         setImages(unifiedImages);
@@ -837,17 +863,38 @@ export default function LandingPage({ templates, onStart }) {
 
   const handleFilterChange = (occ) => {
     setActiveOccasion(occ.id);
-    setVisibleCount(8); // Reset pagination on category change
+    setVisibleCount(8);
+    // Smooth scroll to gallery on filter change if not already in viewport
+    const galleryElement = document.getElementById('gallery');
+    if (galleryElement) {
+      galleryElement.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const filteredImages = images.filter(img => {
-    const matchesSearch = img.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = img.name?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesOccasion = activeOccasion === 'all' || img.occasion_id === activeOccasion;
     return matchesSearch && matchesOccasion;
   });
 
   const displayedImages = filteredImages.slice(0, visibleCount);
   const hasMore = visibleCount < filteredImages.length;
+
+  const handleNext = () => {
+    const currentIndex = filteredImages.findIndex(img => img.id === activeImage?.id);
+    if (currentIndex > -1) {
+      const nextIndex = (currentIndex + 1) % filteredImages.length;
+      setActiveImage(filteredImages[nextIndex]);
+    }
+  };
+
+  const handlePrev = () => {
+    const currentIndex = filteredImages.findIndex(img => img.id === activeImage?.id);
+    if (currentIndex > -1) {
+      const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
+      setActiveImage(filteredImages[prevIndex]);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-[#bf1e2e] selection:text-white page-fadein">
@@ -856,12 +903,6 @@ export default function LandingPage({ templates, onStart }) {
 
       <main>
         <HeroSection />
-
-        <CategoryCircles
-          occasions={occasions}
-          onSelect={handleFilterChange}
-          activeId={activeOccasion}
-        />
 
         {/* Gallery Section */}
         <section id="gallery" ref={galleryRef} className="py-20 bg-[#f9f9f9] scroll-mt-36">
@@ -935,6 +976,12 @@ export default function LandingPage({ templates, onStart }) {
           </div>
         </section>
 
+        <CategoryCircles
+          occasions={occasions}
+          onSelect={handleFilterChange}
+          activeId={activeOccasion}
+        />
+
         <HowItWorks />
         <WhatsAppBanner />
       </main>
@@ -943,12 +990,14 @@ export default function LandingPage({ templates, onStart }) {
         {activeImage && (
           <ImageLightbox
             item={activeImage}
+            onNext={handleNext}
+            onPrev={handlePrev}
             onClose={() => setActiveImage(null)}
           />
         )}
       </AnimatePresence>
 
-      <Footer />
+      <Footer occasions={occasions} onSelect={handleFilterChange} />
       <ScrollToTop />
 
       {/* Tailwind Utility for Marquee */}
