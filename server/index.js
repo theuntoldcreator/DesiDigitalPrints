@@ -118,7 +118,6 @@ app.delete('/api/occasions/images/:id', (req, res) => {
   });
 });
 
-// Initialize SQLite tables and wait for it
 initDb()
   .then(() => {
     app.listen(PORT, () => {

@@ -7,7 +7,8 @@ import {
   Search, MessageCircle, User, ChevronDown,
   Menu, Heart, Bell, HelpCircle,
   Clock, Star, ArrowRight, ShieldCheck,
-  CheckCircle, Phone, Sparkles, Palette, Send
+  CheckCircle, Phone, Sparkles, Palette, Send,
+  X, ZoomIn, ZoomOut, Maximize, MousePointer2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -211,7 +212,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative w-full min-h-[550px] lg:min-h-[680px] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center py-16 lg:py-12">
+    <section ref={heroRef} className="relative w-full min-h-[calc(100vh-80px)] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center pt-[110px] sm:pt-[120px] lg:pt-[110px] pb-10 lg:pb-0">
       {/* Animated glass sliding bars */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
@@ -234,11 +235,11 @@ const HeroSection = () => {
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-black/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center relative z-10 gap-12 lg:gap-0">
-        <div className="w-full lg:flex-1 text-center lg:text-left space-y-8 order-2 lg:order-1">
-          <div className="space-y-4">
+      <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center lg:items-stretch relative z-10 gap-12 lg:gap-0">
+        <div className="w-full lg:flex-1 text-center lg:text-left space-y-4 md:space-y-6 lg:space-y-8 order-2 lg:order-1 flex flex-col justify-center py-6 lg:py-16">
+          <div className="space-y-3 lg:space-y-4">
             <span className="hero-badge inline-block bg-white/15 backdrop-blur-md text-white px-5 py-2 text-[10px] font-black uppercase tracking-[0.3em] rounded-full shadow-lg border border-white/20">Custom Digital Art Studio</span>
-            <h1 className="hero-heading text-6xl md:text-7xl xl:text-8xl font-black text-white leading-[0.95] tracking-tighter drop-shadow-lg">
+            <h1 className="hero-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[0.95] tracking-tighter drop-shadow-lg">
               Your <br /> <span className="relative">
                 Special Moment
                 <div className="absolute bottom-0 left-0 w-full h-3 bg-white/15 -z-10 -rotate-1" />
@@ -275,8 +276,8 @@ const HeroSection = () => {
           </div>
         </div>
 
-        <div className="w-full lg:flex-1 flex justify-center lg:justify-end order-1 lg:order-2">
-          <div className="hero-video-wrap relative w-full max-w-[440px] lg:max-w-[460px] xl:max-w-[500px]">
+        <div className="w-full lg:flex-1 flex justify-center lg:justify-end items-center order-1 lg:order-2 py-0 lg:py-16">
+          <div className="hero-video-wrap relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[440px] xl:max-w-[500px]">
             <div className="aspect-[3/4] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
               <video
                 src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
@@ -292,18 +293,7 @@ const HeroSection = () => {
             </div>
 
             {/* Floating WhatsApp Badge */}
-            <div
-              onClick={() => openWhatsApp()}
-              className="hero-phone-badge absolute -bottom-6 left-0 lg:-left-8 bg-white p-4 md:p-5 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] flex items-center gap-3 animate-bounce-slow border border-gray-50 z-20 cursor-pointer hover:shadow-2xl transition-shadow"
-            >
-              <div className="w-12 h-12 md:w-14 md:h-14 bg-[#bf1e2e]/10 text-[#bf1e2e] rounded-2xl flex items-center justify-center">
-                <Phone className="w-7 h-7 md:w-8 md:h-8" />
-              </div>
-              <div>
-                <p className="font-black text-gray-900 text-sm md:text-base leading-none">+91 90308 11329</p>
-                <p className="text-[10px] font-bold text-[#bf1e2e] uppercase tracking-widest mt-1.5 line-clamp-1">24/7 Available</p>
-              </div>
-            </div>
+
 
             {/* Decorative Elements (Desktop only) */}
             <div className="hidden xl:block absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl" />
@@ -361,23 +351,26 @@ const CategoryCircles = ({ occasions, onSelect, activeId }) => {
   );
 };
 
-const ProductCard = ({ item }) => {
+const ProductCard = ({ item, onOpen }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleWhatsAppOrder = () => {
+  const handleWhatsAppOrder = (e) => {
+    e.stopPropagation();
     openWhatsApp(`Hi! I'm interested in this design: "${item.name}". Can you customize it for my event?`);
   };
 
   return (
     <div
-      className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col border border-gray-100 h-full"
+      className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col border border-gray-100 h-full cursor-zoom-in"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => onOpen(item)}
     >
       <div className="aspect-[4/5] relative overflow-hidden bg-gray-50">
         <img
           src={item.image_url}
           alt={item.name}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
         />
 
@@ -397,24 +390,26 @@ const ProductCard = ({ item }) => {
                 <WhatsAppIcon className="w-5 h-5" />
                 Order This Design
               </button>
-              <button
-                onClick={handleWhatsAppOrder}
-                className="w-full bg-white/15 backdrop-blur-md text-white border border-white/30 font-black py-4 rounded-full shadow-xl hover:bg-white/25 transition-all text-sm uppercase tracking-tighter flex items-center justify-center gap-2"
+              <div
+                className="w-full bg-white/15 backdrop-blur-md text-white border border-white/30 font-black py-4 rounded-full shadow-xl hover:bg-white/25 transition-all text-sm uppercase tracking-tighter flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Palette className="w-4 h-4" />
-                Customize This
-              </button>
+                <Maximize className="w-4 h-4" />
+                View Full Screen
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Wishlist Icon */}
-        <button className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur rounded-full text-gray-400 hover:text-red-500 transition-colors shadow-lg">
+        <button
+          onClick={(e) => { e.stopPropagation(); }}
+          className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur rounded-full text-gray-400 hover:text-red-500 transition-colors shadow-lg z-10"
+        >
           <Heart className="w-4 h-4" />
         </button>
 
         {/* Badge */}
-        <div className="absolute top-4 left-4 bg-[#bf1e2e] text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase shadow-lg">Featured</div>
+        <div className="absolute top-4 left-4 bg-[#bf1e2e] text-white text-[10px] font-black px-3 py-1.5 rounded-lg uppercase shadow-lg z-10">Featured</div>
       </div>
 
       <div className="p-6 flex flex-col flex-1 justify-between gap-4">
@@ -441,6 +436,87 @@ const ProductCard = ({ item }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+// --- Full Screen Lightbox Component ---
+const ImageLightbox = ({ item, onClose }) => {
+  const [zoom, setZoom] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    const handleEsc = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleEsc);
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [onClose]);
+
+  const toggleZoom = (e) => {
+    e.stopPropagation();
+    setZoom(prev => (prev === 1 ? 2.5 : 1));
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/95 backdrop-blur-2xl p-4 md:p-12"
+      onClick={onClose}
+    >
+      {/* Navbar in Lightbox */}
+      <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-center z-[1001] pointer-events-none">
+        <div className="text-white space-y-1">
+          <h3 className="text-lg md:text-xl font-black uppercase tracking-tighter">{item.name}</h3>
+          <p className="text-xs text-white/50 font-bold uppercase tracking-widest">{zoom > 1 ? 'Drag to explore details' : 'Click image to zoom'}</p>
+        </div>
+        <div className="flex gap-4 pointer-events-auto">
+          <button
+            onClick={toggleZoom}
+            className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-md transition-colors"
+            title="Toggle Zoom"
+          >
+            {zoom === 1 ? <ZoomIn className="w-6 h-6" /> : <ZoomOut className="w-6 h-6" />}
+          </button>
+          <button
+            onClick={onClose}
+            className="w-12 h-12 bg-[#bf1e2e] hover:bg-[#a01826] text-white rounded-full flex items-center justify-center shadow-lg transition-colors"
+            title="Close"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        className={`relative w-full h-full flex items-center justify-center select-none ${zoom > 1 ? 'cursor-move' : 'cursor-zoom-in'}`}
+        onClick={toggleZoom}
+      >
+        <motion.div
+          animate={{ scale: zoom }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          drag={zoom > 1}
+          dragConstraints={{ left: -500, right: 500, top: -500, bottom: 500 }}
+          className="relative max-w-full max-h-full"
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => setIsDragging(false)}
+        >
+          <img
+            src={item.image_url}
+            alt={item.name}
+            className={`max-w-screen md:max-h-[85vh] rounded-lg shadow-2xl pointer-events-none transition-shadow ${zoom > 1 ? 'shadow-[0_0_100px_rgba(0,0,0,0.5)]' : ''}`}
+          />
+        </motion.div>
+      </div>
+
+      {/* Zoom Helper Badge */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-white/10 text-white/70 px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-md border border-white/10 pointer-events-none">
+        {zoom === 1 ? 'Double Tap to Zoom' : 'Drag to Move'}
+      </div>
+    </motion.div>
   );
 };
 
@@ -688,6 +764,7 @@ export default function LandingPage({ templates, onStart }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(8);
+  const [activeImage, setActiveImage] = useState(null);
   const galleryRef = useRef(null);
 
   useLayoutEffect(() => {
@@ -873,6 +950,15 @@ export default function LandingPage({ templates, onStart }) {
         <HowItWorks />
         <WhatsAppBanner />
       </main>
+
+      <AnimatePresence>
+        {activeImage && (
+          <ImageLightbox
+            item={activeImage}
+            onClose={() => setActiveImage(null)}
+          />
+        )}
+      </AnimatePresence>
 
       <Footer />
       <FloatingWhatsApp />
