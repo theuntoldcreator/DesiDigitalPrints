@@ -1,26 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 
-export default function AdminLogin({ onLogin }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const ADMIN_PIN = '8055';
 
-  const handleLogin = async (e) => {
+export default function AdminLogin({ onLogin }) {
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-    
-    try {
-      await pb.admins.authWithPassword(email, password);
-      onLogin();
-    } catch (err) {
-      setError('Invalid email or password. Please try again.');
-      console.error('Login error:', err);
-    } finally {
+
+    setTimeout(() => {
+      if (pin === ADMIN_PIN) {
+        onLogin();
+      } else {
+        setError('Invalid PIN. Please try again.');
+      }
       setLoading(false);
+    }, 500);
+  };
+
+  const handlePinChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+    setPin(value);
+
+    // Auto-login when correct 4-digit PIN is entered
+    if (value.length === 4 && value === ADMIN_PIN) {
+      setLoading(true);
+      setTimeout(() => onLogin(), 400);
+    } else if (value.length === 4 && value !== ADMIN_PIN) {
+      setError('Invalid PIN. Please try again.');
+      setTimeout(() => { setPin(''); setError(''); }, 1000);
     }
   };
 
@@ -39,31 +53,23 @@ export default function AdminLogin({ onLogin }) {
         animate={{ y: 0, opacity: 1 }}
         className="bg-white p-8 rounded-2xl shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] w-full max-w-[440px] border border-gray-100"
       >
-        <form onSubmit={handleLogin} className="flex flex-col gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Admin Email</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@example.com"
-                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#bf1e2e] focus:bg-white transition-all"
-              />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center">
+              <Lock className="w-7 h-7 text-gray-400" />
             </div>
-
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 block">Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#bf1e2e] focus:bg-white transition-all"
-              />
-            </div>
+            <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Enter Admin PIN</label>
+            <input
+              type="password"
+              inputMode="numeric"
+              required
+              value={pin}
+              onChange={handlePinChange}
+              placeholder="••••"
+              maxLength={4}
+              className="w-48 p-4 bg-gray-50 border border-gray-200 rounded-xl text-2xl font-black text-center tracking-[0.5em] focus:outline-none focus:border-[#bf1e2e] focus:bg-white transition-all"
+              autoFocus
+            />
           </div>
 
           {error && (
@@ -78,25 +84,24 @@ export default function AdminLogin({ onLogin }) {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || pin.length < 4}
             className="w-full bg-black text-white py-4 rounded-xl text-sm font-black uppercase tracking-widest hover:bg-[#bf1e2e] transition-all shadow-lg active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {loading ? 'Authenticating...' : 'Sign In to Dashboard'}
+            {loading ? 'Authenticating...' : 'Unlock Dashboard'}
           </button>
-
-          <div className="border-t border-gray-200 mt-4 pt-4 text-center">
-            <button
-              type="button"
-              className="bg-[#42b72a] text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-[#36a420] transition-colors"
-            >
-              Reset PIN
-            </button>
-          </div>
         </form>
       </motion.div>
 
-      <div className="mt-8 text-sm text-gray-500 text-center">
-        <b>Desi Digital Prints</b> for Business & Wedding Planning.
+      <div className="mt-6 flex flex-col items-center gap-4">
+        <button
+          onClick={() => window.location.href = '/'}
+          className="text-sm font-bold text-gray-400 hover:text-[#bf1e2e] transition-all flex items-center gap-2 group"
+        >
+          ← <span className="group-hover:underline">Back to Website</span>
+        </button>
+        <div className="text-sm text-gray-500 text-center">
+          <b>Desi Digital Prints</b> for Business & Wedding Planning.
+        </div>
       </div>
     </div>
   );

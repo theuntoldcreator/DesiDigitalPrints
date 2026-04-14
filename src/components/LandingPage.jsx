@@ -348,11 +348,10 @@ const CategoryCircles = ({ occasions, onSelect, activeId }) => {
   );
 };
 
-const ProductCard = ({ item, onOpen }) => {
+const ProductCard = ({ item }) => {
   return (
     <div
-      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-zoom-in border border-gray-100"
-      onClick={() => onOpen(item)}
+      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
     >
       <div className="aspect-[2/3] relative overflow-hidden bg-gray-50">
         <img
@@ -366,112 +365,6 @@ const ProductCard = ({ item, onOpen }) => {
   );
 };
 
-// --- Advanced Navigation Lightbox (Premium Gallery Style) ---
-const ImageLightbox = ({ item, onClose, onNext, onPrev }) => {
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight' && onNext) onNext();
-      if (e.key === 'ArrowLeft' && onPrev) onPrev();
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [onClose, onNext, onPrev]);
-
-  if (!item) return null;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/95 backdrop-blur-2xl px-4 md:px-20"
-      onClick={onClose}
-    >
-      {/* Background Dim (Click to close) */}
-      <div className="absolute inset-0 cursor-zoom-out" />
-
-      {/* Floating Close Button */}
-      <button
-        onClick={onClose}
-        className="fixed top-8 right-8 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-2xl z-[2050] hover:bg-[#bf1e2e] hover:text-white transition-all group active:scale-95"
-      >
-        <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
-      </button>
-
-      {/* Navigation Arrows (Desktop Only Overlay) */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-6 pointer-events-none z-[2040]">
-        <button
-          onClick={(e) => { e.stopPropagation(); onPrev(); }}
-          className="w-16 h-16 bg-white/5 hover:bg-white text-white hover:text-black rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-all pointer-events-auto shadow-2xl group active:scale-90"
-        >
-          <ChevronLeft className="w-8 h-8 group-hover:-translate-x-1 transition-transform" />
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); onNext(); }}
-          className="w-16 h-16 bg-white/5 hover:bg-white text-white hover:text-black rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-all pointer-events-auto shadow-2xl group active:scale-90"
-        >
-          <ChevronRight className="w-8 h-8 group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
-
-      {/* Modal Container */}
-      <motion.div
-        key={item.id}
-        initial={{ opacity: 0, x: 20, scale: 0.95 }}
-        animate={{ opacity: 1, x: 0, scale: 1 }}
-        exit={{ opacity: 0, x: -20, scale: 0.95 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        className="relative z-[2010] flex flex-col items-center justify-center w-full h-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Main Exhibit Frame */}
-        <div className="flex flex-col items-center justify-center max-w-full max-h-full">
-          <div className="relative group">
-            <img
-              src={item.image_url}
-              alt={item.name}
-              className="max-w-[90vw] max-h-[60vh] md:max-h-[70vh] w-auto h-auto object-contain rounded-xl shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] border-[8px] md:border-[16px] border-white transition-transform hover:scale-[1.01] duration-500"
-            />
-            
-            {/* Mobile Navigation (Swipe Hints) */}
-            <div className="absolute inset-y-0 left-0 w-1/4 flex md:hidden items-center justify-start pl-4" onClick={onPrev}>
-               <ChevronLeft className="w-8 h-8 text-white/30" />
-            </div>
-            <div className="absolute inset-y-0 right-0 w-1/4 flex md:hidden items-center justify-end pr-4" onClick={onNext}>
-               <ChevronRight className="w-8 h-8 text-white/30" />
-            </div>
-          </div>
-          
-          {/* Studio Info Bar */}
-          <div className="mt-8 md:mt-12 bg-white px-8 md:px-14 py-6 rounded-[32px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-white/20 flex flex-col md:flex-row items-center gap-6 md:gap-12 min-w-[320px] max-w-[95vw]">
-            <div className="text-center md:text-left">
-              <h3 className="text-2xl font-black text-gray-900 tracking-tighter leading-none">{item.name}</h3>
-              <div className="flex items-center gap-2 mt-2 justify-center md:justify-start">
-                 <span className="text-[10px] font-black text-[#bf1e2e] uppercase tracking-[0.2em] px-2 py-0.5 bg-[#bf1e2e]/5 rounded-full">Pro Edition</span>
-                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Handcrafted Studio Art</p>
-              </div>
-            </div>
-            <div className="hidden md:block h-12 w-px bg-gray-100" />
-            <button
-              onClick={() => openWhatsApp(`Hi! I'm interested in ordering the "${item.name}" design from your premium collection! ✨`)}
-              className="bg-[#25D366] text-white px-10 py-4 rounded-full text-xs font-black uppercase tracking-widest hover:bg-[#128C7E] transition-all flex items-center gap-3 shadow-[0_15px_30px_rgba(37,211,102,0.4)] active:scale-95 whitespace-nowrap group/wa"
-            >
-              <WhatsAppIcon className="w-6 h-6 transition-transform group-hover/wa:scale-110" />
-              Get Quote on WhatsApp
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
 
 // --- How It Works Section ---
 const HowItWorks = () => {
@@ -776,7 +669,7 @@ export default function LandingPage({ templates, onStart }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(8);
-  const [activeImage, setActiveImage] = useState(null);
+
   const galleryRef = useRef(null);
 
   useEffect(() => {
@@ -880,21 +773,7 @@ export default function LandingPage({ templates, onStart }) {
   const displayedImages = filteredImages.slice(0, visibleCount);
   const hasMore = visibleCount < filteredImages.length;
 
-  const handleNext = () => {
-    const currentIndex = filteredImages.findIndex(img => img.id === activeImage?.id);
-    if (currentIndex > -1) {
-      const nextIndex = (currentIndex + 1) % filteredImages.length;
-      setActiveImage(filteredImages[nextIndex]);
-    }
-  };
 
-  const handlePrev = () => {
-    const currentIndex = filteredImages.findIndex(img => img.id === activeImage?.id);
-    if (currentIndex > -1) {
-      const prevIndex = (currentIndex - 1 + filteredImages.length) % filteredImages.length;
-      setActiveImage(filteredImages[prevIndex]);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-[#bf1e2e] selection:text-white page-fadein">
@@ -944,7 +823,7 @@ export default function LandingPage({ templates, onStart }) {
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.5, delay: (idx % 8) * 0.05 }}
                       >
-                        <ProductCard item={img} onOpen={(item) => setActiveImage(item)} />
+                        <ProductCard item={img} />
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -986,16 +865,7 @@ export default function LandingPage({ templates, onStart }) {
         <WhatsAppBanner />
       </main>
 
-      <AnimatePresence>
-        {activeImage && (
-          <ImageLightbox
-            item={activeImage}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            onClose={() => setActiveImage(null)}
-          />
-        )}
-      </AnimatePresence>
+
 
       <Footer occasions={occasions} onSelect={handleFilterChange} />
       <ScrollToTop />
