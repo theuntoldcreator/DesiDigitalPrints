@@ -18,7 +18,10 @@ import {
   ChevronDown,
   RefreshCcw,
   Sun,
-  Moon
+  Moon,
+  Pencil,
+  Check,
+  X
 } from 'lucide-react';
 import OccasionManager from './OccasionManager';
 import ImageManager from './ImageManager';
@@ -113,6 +116,21 @@ export default function AdminDashboard({ onLogout }) {
     }
   };
 
+  const handleRenameOccasion = async (id, newName) => {
+    if (!newName.trim()) return;
+    try {
+      const updated = await pb.update('occasions', id, { name: newName.trim() });
+      setOccasions(prev => prev.map(o => o.id === id ? { ...o, name: updated.name } : o));
+      // Also update selectedOccasion if it's the one being renamed
+      if (selectedOccasion?.id === id) {
+        setSelectedOccasion(prev => ({ ...prev, name: updated.name }));
+      }
+    } catch (err) {
+      console.error('Rename failed:', err);
+      alert('Failed to rename booklet.');
+    }
+  };
+
   // Helper for Chart
   const renderVisitorChart = () => {
     if (!stats || !stats.history) return <div className="text-gray-300">No data yet</div>;
@@ -176,7 +194,7 @@ export default function AdminDashboard({ onLogout }) {
                 className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-10"
               >
                 {occasions.map((occ) => (
-                  <FolderItem key={occ.id} occ={occ} onClick={() => openFolder(occ)} onDelete={(e) => deleteOccasion(occ.id, e)} />
+                  <FolderItem key={occ.id} occ={occ} onClick={() => openFolder(occ)} onDelete={(e) => deleteOccasion(occ.id, e)} onRename={(newName) => handleRenameOccasion(occ.id, newName)} />
                 ))}
                 <div onClick={() => setView('create')} className="aspect-[4/5] border-3 border-dashed border-gray-200 rounded-[40px] flex flex-col items-center justify-center gap-4 hover:border-[#bf1e2e] hover:bg-white transition-all cursor-pointer group shadow-sm hover:shadow-xl">
                     <Plus className="w-8 h-8 text-gray-300 group-hover:text-[#bf1e2e] group-hover:scale-125 transition-all" />
@@ -313,22 +331,96 @@ function NavTab({ icon: Icon, label, active, onClick }) {
   );
 }
 
-function FolderItem({ occ, onClick, onDelete }) {
+function FolderItem({ occ, onClick, onDelete, onRename }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(occ.name);
+
+  const startEditing = (e) => {
+    e.stopPropagation();
+    setEditValue(occ.name);
+    setIsEditing(true);
+  };
+
+  const cancelEditing = (e) => {
+    if (e) e.stopPropagation();
+    setIsEditing(false);
+    setEditValue(occ.name);
+  };
+
+  const saveRename = (e) => {
+    if (e) e.stopPropagation();
+    if (editValue.trim() && editValue.trim() !== occ.name) {
+      onRename(editValue.trim());
+    }
+    setIsEditing(false);
+  };
+
   return (
     <motion.div 
       whileHover={{ y: -10 }}
-      onClick={onClick}
+      onClick={isEditing ? undefined : onClick}
       className="group flex flex-col items-center gap-4 cursor-pointer"
     >
       <div className="w-full aspect-[4/5] bg-white dark:bg-zinc-900 rounded-[40px] shadow-lg border border-gray-50 dark:border-zinc-800 flex items-center justify-center relative group-hover:shadow-2xl group-hover:bg-[#bf1e2e]/5 dark:group-hover:bg-[#bf1e2e]/10 transition-all outline outline-0 outline-[#bf1e2e] group-hover:outline-4">
          <FolderOpen className="w-20 h-20 text-[#bf1e2e]/20 group-hover:text-[#bf1e2e] transition-all" />
+         
+         {/* Edit button */}
+         <button 
+           onClick={startEditing} 
+           className="absolute top-4 left-4 p-3 bg-white dark:bg-zinc-800 text-gray-400 hover:text-[#bf1e2e] rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 transition-all transform scale-75 group-hover:scale-100"
+           title="Rename booklet"
+         >
+            <Pencil className="w-4 h-4" />
+         </button>
+
+         {/* Delete button */}
          <button onClick={onDelete} className="absolute top-4 right-4 p-3 bg-white dark:bg-zinc-800 text-red-500 rounded-2xl shadow-xl opacity-0 truncate group-hover:opacity-100 hover:bg-red-500 dark:hover:bg-red-500 hover:text-white transition-all transform scale-75 group-hover:scale-100">
             <Trash2 className="w-4 h-4" />
          </button>
       </div>
-      <div className="text-center">
-        <h4 className="font-black text-xs uppercase tracking-tighter text-gray-900 dark:text-white group-hover:text-[#bf1e2e] transition-colors">{occ.name}</h4>
-        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Collection</p>
+
+      {/* Name / Edit area */}
+      <div className="text-center w-full px-1">
+        {isEditing ? (
+          <div className="flex items-center gap-1.5 justify-center" onClick={(e) => e.stopPropagation()}>
+            <input
+              autoFocus
+              type="text"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') saveRename();
+                if (e.key === 'Escape') cancelEditing();
+              }}
+              className="w-full bg-white dark:bg-zinc-800 border-2 border-[#bf1e2e] rounded-xl px-3 py-1.5 text-xs font-black uppercase tracking-tighter outline-none dark:text-white text-center"
+            />
+            <button
+              onClick={saveRename}
+              className="p-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 active:scale-90 transition-all shadow-md shrink-0"
+              title="Save"
+            >
+              <Check className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={cancelEditing}
+              className="p-1.5 bg-gray-200 dark:bg-zinc-700 text-gray-500 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-all shrink-0"
+              title="Cancel"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <>
+            <h4 
+              className="font-black text-xs uppercase tracking-tighter text-gray-900 dark:text-white group-hover:text-[#bf1e2e] transition-colors"
+              onDoubleClick={startEditing}
+              title="Double-click to rename"
+            >
+              {occ.name}
+            </h4>
+            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mt-1">Collection</p>
+          </>
+        )}
       </div>
     </motion.div>
   );

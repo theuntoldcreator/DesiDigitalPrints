@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Layers, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Trash2, Layers, CheckCircle, AlertTriangle, Pencil, Check, X } from 'lucide-react';
 import { pb } from '../../lib/pb';
 
 export default function OccasionManager({ occasions, onUpdate }) {
   const [newOccasion, setNewOccasion] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [isRenaming, setIsRenaming] = useState(false);
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -29,6 +32,37 @@ export default function OccasionManager({ occasions, onUpdate }) {
       onUpdate(occasions.filter(o => o.id !== id));
     } catch (err) {
       console.error('Delete failed:', err);
+    }
+  };
+
+  const startEditing = (occ) => {
+    setEditingId(occ.id);
+    setEditName(occ.name);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditName('');
+  };
+
+  const handleRename = async (id) => {
+    if (!editName.trim()) return;
+    if (editName.trim() === occasions.find(o => o.id === id)?.name) {
+      cancelEditing();
+      return;
+    }
+
+    setIsRenaming(true);
+    try {
+      const updated = await pb.update('occasions', id, { name: editName.trim() });
+      // Update local state immediately so UI reflects the change
+      onUpdate(occasions.map(o => o.id === id ? { ...o, name: updated.name } : o));
+      cancelEditing();
+    } catch (err) {
+      console.error('Rename failed:', err);
+      alert('Failed to rename booklet. Please try again.');
+    } finally {
+      setIsRenaming(false);
     }
   };
 
@@ -77,19 +111,62 @@ export default function OccasionManager({ occasions, onUpdate }) {
                key={occ.id} 
                className="p-5 bg-gray-50/50 dark:bg-zinc-800/50 rounded-2xl flex items-center justify-between group hover:bg-white dark:hover:bg-zinc-800 hover:shadow-xl hover:border-[#bf1e2e]/10 dark:hover:border-[#bf1e2e]/20 border border-transparent transition-all border-dashed"
              >
-               <div className="flex items-center gap-4">
-                 <div className="w-12 h-12 bg-white dark:bg-zinc-700 rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100 dark:border-zinc-600">
+               <div className="flex items-center gap-4 flex-1 min-w-0">
+                 <div className="w-12 h-12 bg-white dark:bg-zinc-700 rounded-xl flex items-center justify-center text-xl shadow-sm border border-gray-100 dark:border-zinc-600 shrink-0">
                     {occ.name.includes('Wed') ? '💍' : occ.name.includes('Birth') ? '🎂' : '🎉'}
                  </div>
-                 <span className="font-black text-gray-900 dark:text-white tracking-tight text-lg uppercase">{occ.name}</span>
+                 
+                 {editingId === occ.id ? (
+                   <div className="flex items-center gap-2 flex-1 min-w-0">
+                     <input
+                       autoFocus
+                       type="text"
+                       value={editName}
+                       onChange={(e) => setEditName(e.target.value)}
+                       onKeyDown={(e) => {
+                         if (e.key === 'Enter') handleRename(occ.id);
+                         if (e.key === 'Escape') cancelEditing();
+                       }}
+                       className="flex-1 min-w-0 bg-white dark:bg-zinc-700 border-2 border-[#bf1e2e] rounded-xl px-4 py-2 text-sm font-black uppercase tracking-tight outline-none dark:text-white transition-all"
+                     />
+                     <button
+                       onClick={() => handleRename(occ.id)}
+                       disabled={isRenaming}
+                       className="p-2 bg-green-500 text-white rounded-xl hover:bg-green-600 active:scale-95 transition-all shadow-md shrink-0"
+                       title="Save"
+                     >
+                       <Check className="w-4 h-4" />
+                     </button>
+                     <button
+                       onClick={cancelEditing}
+                       className="p-2 bg-gray-200 dark:bg-zinc-600 text-gray-500 dark:text-gray-300 rounded-xl hover:bg-gray-300 dark:hover:bg-zinc-500 transition-all shrink-0"
+                       title="Cancel"
+                     >
+                       <X className="w-4 h-4" />
+                     </button>
+                   </div>
+                 ) : (
+                   <span className="font-black text-gray-900 dark:text-white tracking-tight text-lg uppercase truncate">{occ.name}</span>
+                 )}
                </div>
                
-               <button 
-                 onClick={() => handleDelete(occ.id)}
-                 className="p-2 text-gray-300 dark:text-gray-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
-               >
-                 <Trash2 className="w-5 h-5" />
-               </button>
+               {editingId !== occ.id && (
+                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                   <button 
+                     onClick={() => startEditing(occ)}
+                     className="p-2 text-gray-300 dark:text-gray-600 hover:text-[#bf1e2e] hover:bg-[#bf1e2e]/10 rounded-lg transition-all"
+                     title="Rename booklet"
+                   >
+                     <Pencil className="w-4 h-4" />
+                   </button>
+                   <button 
+                     onClick={() => handleDelete(occ.id)}
+                     className="p-2 text-gray-300 dark:text-gray-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all"
+                   >
+                     <Trash2 className="w-5 h-5" />
+                   </button>
+                 </div>
+               )}
              </div>
            ))}
            
