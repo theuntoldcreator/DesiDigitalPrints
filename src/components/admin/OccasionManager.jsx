@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, Layers, CheckCircle, AlertTriangle, Pencil, Check, X } from 'lucide-react';
+import { toast } from 'react-fox-toast';
 import { pb } from '../../lib/pb';
 
 export default function OccasionManager({ occasions, onUpdate }) {
@@ -19,20 +20,23 @@ export default function OccasionManager({ occasions, onUpdate }) {
       onUpdate([...occasions, saved]);
       setNewOccasion('');
     } catch (err) {
-      alert('Failed to save to PocketBase. Ensure the "occasions" collection exists.');
+      toast.error('Failed to save to PocketBase. Ensure the "occasions" collection exists.');
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this booklet?')) return;
-    try {
-      await pb.delete('occasions', id);
-      onUpdate(occasions.filter(o => o.id !== id));
-    } catch (err) {
-      console.error('Delete failed:', err);
-    }
+  const handleDelete = (id) => {
+    const toastId = toast.custom(
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <p style={{ fontWeight: 700, fontSize: '14px' }}>Delete this booklet?</p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={async () => { toast.remove(toastId); try { await pb.delete('occasions', id); onUpdate(occasions.filter(o => o.id !== id)); toast.success('Booklet deleted'); } catch (err) { console.error('Delete failed:', err); toast.error('Delete failed'); } }} style={{ padding: '6px 16px', background: '#bf1e2e', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Yes, Delete</button>
+          <button onClick={() => toast.remove(toastId)} style={{ padding: '6px 16px', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+        </div>
+      </div>,
+      { duration: 10000 }
+    );
   };
 
   const startEditing = (occ) => {
@@ -60,7 +64,7 @@ export default function OccasionManager({ occasions, onUpdate }) {
       cancelEditing();
     } catch (err) {
       console.error('Rename failed:', err);
-      alert('Failed to rename booklet. Please try again.');
+      toast.error('Failed to rename booklet. Please try again.');
     } finally {
       setIsRenaming(false);
     }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ToastContainer } from 'react-fox-toast';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import GeneratorWizard from './components/GeneratorWizard';
@@ -36,6 +37,7 @@ function App() {
   return (
     <Router>
       <div className="min-h-screen bg-base-100 font-sans text-base-content">
+        <ToastContainer position="top-right" duration={3000} isPausedOnHover={true} />
         <Routes>
           {/* Main Website Route */}
           <Route path="/" element={

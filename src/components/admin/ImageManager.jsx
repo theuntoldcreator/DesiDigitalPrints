@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Upload, Trash2, Image as ImageIcon, Plus, X, CheckCircle, Check, ChevronDown } from 'lucide-react';
+import { toast } from 'react-fox-toast';
 import { pb } from '../../lib/pb';
 
 export default function ImageManager({ occasions, selectedOccasion, onSelectOccasion }) {
@@ -36,7 +37,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('File is too large! Maximum size allowed is 5MB.');
+      toast.warning('File is too large! Maximum size allowed is 5MB.');
       return;
     }
 
@@ -76,9 +77,9 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
     } catch (err) {
       console.error('Upload failed:', err);
       if (err.message === 'PB_OFFLINE') {
-        alert('Connectivity Error: Admin Panel is currently disconnected from the PocketBase cloud. Please check your internet connection.');
+        toast.error('Connectivity Error: Admin Panel is disconnected from the cloud.');
       } else {
-        alert('Upload Failed: Ensure your PocketBase "images" collection accepts "file", "name", and "occasion" fields, or check the console for field validation errors.');
+        toast.error('Upload Failed: Check the console for field validation errors.');
       }
     } finally {
       setIsUploading(false);
@@ -94,8 +95,21 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
       setIsAddingOccasion(false);
     } catch (err) {
       console.error('Quick add failed:', err);
-      alert('Failed to create booklet. It might already exist.');
+      toast.error('Failed to create booklet. It might already exist.');
     }
+  };
+
+  const handleDelete = (imageId) => {
+    const toastId = toast.custom(
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <p style={{ fontWeight: 700, fontSize: '14px' }}>Delete this image from the booklet?</p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={async () => { toast.remove(toastId); try { await pb.delete('images', imageId); setImages(prev => prev.filter(img => img.id !== imageId)); toast.success('Image deleted successfully'); } catch { toast.error('Failed to delete image'); } }} style={{ padding: '6px 16px', background: '#bf1e2e', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Yes, Delete</button>
+          <button onClick={() => toast.remove(toastId)} style={{ padding: '6px 16px', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+        </div>
+      </div>,
+      { duration: 10000 }
+    );
   };
 
   const isIdealRatio = dimensions && Math.abs(dimensions.ratio - 0.67) < 0.05;

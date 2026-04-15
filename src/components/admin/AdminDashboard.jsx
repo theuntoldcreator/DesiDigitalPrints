@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-fox-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   FolderOpen, 
@@ -98,13 +99,17 @@ export default function AdminDashboard({ onLogout }) {
   };
 
   const resetStats = async () => {
-    if (!stats || !confirm('Reset all visitor data?')) return;
-    try {
-      await pb.update('stats', stats.id, { value: 0, history: {} });
-      fetchStats();
-    } catch (err) {
-      alert('Reset failed');
-    }
+    if (!stats) return;
+    const toastId = toast.custom(
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <p style={{ fontWeight: 700, fontSize: '14px' }}>Reset all visitor data?</p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={async () => { toast.remove(toastId); try { await pb.update('stats', stats.id, { value: 0, history: {} }); fetchStats(); toast.success('Stats reset successfully'); } catch { toast.error('Reset failed'); } }} style={{ padding: '6px 16px', background: '#bf1e2e', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Yes, Reset</button>
+          <button onClick={() => toast.remove(toastId)} style={{ padding: '6px 16px', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+        </div>
+      </div>,
+      { duration: 10000 }
+    );
   };
 
   const openFolder = (occ) => {
@@ -117,15 +122,18 @@ export default function AdminDashboard({ onLogout }) {
     setSelectedOccasion(null);
   };
 
-  const deleteOccasion = async (id, e) => {
+  const deleteOccasion = (id, e) => {
     e.stopPropagation();
-    if (!confirm('Delete this entire booklet collection?')) return;
-    try {
-      await pb.delete('occasions', id);
-      setOccasions(occasions.filter(o => o.id !== id));
-    } catch (err) {
-      alert('Delete failed');
-    }
+    const toastId = toast.custom(
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <p style={{ fontWeight: 700, fontSize: '14px' }}>Delete this entire booklet collection?</p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={async () => { toast.remove(toastId); try { await pb.delete('occasions', id); setOccasions(prev => prev.filter(o => o.id !== id)); toast.success('Booklet deleted'); } catch { toast.error('Delete failed'); } }} style={{ padding: '6px 16px', background: '#bf1e2e', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Yes, Delete</button>
+          <button onClick={() => toast.remove(toastId)} style={{ padding: '6px 16px', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+        </div>
+      </div>,
+      { duration: 10000 }
+    );
   };
 
   const handleRenameOccasion = async (id, newName) => {
@@ -139,7 +147,7 @@ export default function AdminDashboard({ onLogout }) {
       }
     } catch (err) {
       console.error('Rename failed:', err);
-      alert('Failed to rename booklet.');
+      toast.error('Failed to rename booklet.');
     }
   };
 

@@ -204,8 +204,8 @@ const MainHeader = ({ searchQuery, setSearchQuery }) => {
 
 const NavigationBar = ({ occasions, activeOccasion, onSelect }) => {
   return (
-    <nav className="border border-gray-200 bg-white/80 backdrop-blur-md w-full rounded-2xl shadow-sm mb-10 overflow-x-auto">
-      <ul className="flex items-center justify-start lg:justify-center gap-6 lg:gap-14 py-3 px-4 text-[12px] lg:text-[13px] font-bold text-gray-800 uppercase tracking-widest whitespace-nowrap min-w-max lg:min-w-0">
+    <nav className="border border-gray-200 bg-white/80 backdrop-blur-md w-full rounded-2xl shadow-sm mb-10 overflow-x-auto hide-scrollbar">
+      <ul className="flex items-center justify-start lg:justify-center gap-4 sm:gap-6 lg:gap-14 py-3 px-4 text-[11px] sm:text-[12px] lg:text-[13px] font-bold text-gray-800 uppercase tracking-widest whitespace-nowrap min-w-max lg:min-w-0">
         <li
           onClick={() => onSelect({ id: 'all', name: 'All' })}
           className={`cursor-pointer hover:text-[#bf1e2e] transition-all relative group py-1 ${activeOccasion === 'all' ? 'text-[#bf1e2e]' : ''}`}
@@ -238,7 +238,7 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative w-full min-h-[calc(100vh-80px)] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center pt-[60px] sm:pt-[70px] lg:pt-[56px] pb-6 lg:pb-0">
+    <section className="relative w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center py-10 sm:py-14 lg:py-0">
       {/* Animated glass sliding bars */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
@@ -261,20 +261,20 @@ const HeroSection = () => {
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-black/10 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="container mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center lg:items-stretch relative z-10 gap-12 lg:gap-0">
-        <div className="w-full lg:flex-1 text-center lg:text-left space-y-4 md:space-y-6 lg:space-y-8 order-2 lg:order-1 flex flex-col justify-center py-2 lg:py-6">
-          <div className="space-y-3 lg:space-y-4">
-            <h1 className="hero-heading text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight tracking-tighter drop-shadow-xl max-w-2xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-12 flex flex-col lg:flex-row items-center lg:items-stretch relative z-10 gap-8 sm:gap-10 lg:gap-0">
+        <div className="w-full lg:flex-1 text-center lg:text-left space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-8 order-2 lg:order-1 flex flex-col justify-center py-2 lg:py-6">
+          <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+            <h1 className="hero-heading text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight tracking-tighter drop-shadow-xl max-w-2xl">
               Designs That Bring Every Idea to Life
             </h1>
           </div>
-          <p className="hero-desc text-lg md:text-xl text-white/80 font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed italic">
+          <p className="hero-desc text-sm sm:text-base md:text-lg lg:text-xl text-white/80 font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed italic">
             "From luxury invitations and event boards to social media creatives and custom graphics — explore premium designs crafted for every occasion and brand. Browse our work, choose your style, and connect on WhatsApp to get started."
           </p>
-          <div className="hero-btns flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-6">
+          <div className="hero-btns flex flex-col sm:flex-row gap-4 sm:gap-5 justify-center lg:justify-start pt-4 sm:pt-6">
             <a
               href="#gallery"
-              className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center border-2 border-white"
+              className="bg-white hover:bg-gray-50 text-[#bf1e2e] font-black px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter text-center border-2 border-white"
             >
               Explore Designs
             </a>
@@ -292,7 +292,7 @@ const HeroSection = () => {
         </div>
 
         <div className="w-full lg:flex-1 flex justify-center lg:justify-end items-center order-1 lg:order-2 py-0 lg:py-6">
-          <div className="aspect-[2/3] rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
+          <div className="w-[65%] sm:w-[55%] md:w-[45%] lg:w-full max-w-[400px] aspect-[2/3] rounded-[28px] sm:rounded-[36px] lg:rounded-[48px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] border-4 sm:border-[6px] lg:border-[8px] border-white/20 relative group transition-transform duration-700 hover:scale-[1.02] bg-gradient-to-br from-[#bf1e2e] to-[#8b0000]">
             <video
               ref={videoRef}
               src="https://huggingface.co/spaces/theuntoldcreator1999/desidigitalprints/resolve/main/hero.mp4"
@@ -319,27 +319,27 @@ const HeroSection = () => {
 
 const CategoryCircles = ({ occasions, onSelect, activeId }) => {
   return (
-    <div className="py-16 md:py-24 bg-white overflow-hidden">
-      <div className="container mx-auto px-6">
-        <div className="cat-heading text-center mb-12 space-y-3">
+    <div className="py-12 sm:py-16 md:py-24 bg-white overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="cat-heading text-center mb-8 sm:mb-12 space-y-2 sm:space-y-3">
           <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Collections</div>
-          <h2 className="text-4xl font-black text-gray-900 tracking-tighter">Browse by Occasion</h2>
-          <p className="text-gray-500 font-medium italic">Hand-crafted collections for every celebration</p>
+          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tighter">Browse by Occasion</h2>
+          <p className="text-sm sm:text-base text-gray-500 font-medium italic">Hand-crafted collections for every celebration</p>
         </div>
-        <div className="cat-circles-wrap flex flex-wrap justify-center gap-6 md:gap-12">
+        <div className="cat-circles-wrap flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-12">
           {occasions.map(occ => (
             <div
               key={occ.id}
               className="cat-circle flex flex-col items-center gap-4 group cursor-pointer"
               onClick={() => onSelect(occ)}
             >
-              <div className={`w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
+              <div className={`w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1 sm:p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
                 <div className="w-full h-full rounded-full overflow-hidden relative">
                   <img src={`https://picsum.photos/seed/${occ.name}/200/200`} loading="lazy" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                   <div className={`absolute inset-0 transition-colors ${activeId === occ.id ? 'bg-[#bf1e2e]/10' : 'bg-black/10 group-hover:bg-[#bf1e2e]/10'}`} />
                 </div>
               </div>
-              <span className={`text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
+              <span className={`text-xs sm:text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
             </div>
           ))}
         </div>
@@ -369,14 +369,14 @@ const ProductCard = ({ item }) => {
 // --- How It Works Section ---
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-24 bg-gradient-to-b from-white to-[#fff5f5] scroll-mt-36">
-      <div className="container mx-auto px-6">
-        <div className="hiw-heading text-center mb-16 space-y-4">
+    <section id="how-it-works" className="py-16 sm:py-20 md:py-24 bg-gradient-to-b from-white to-[#fff5f5] scroll-mt-20">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="hiw-heading text-center mb-10 sm:mb-16 space-y-3 sm:space-y-4">
           <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Simple Process</div>
-          <h2 className="text-5xl font-black text-gray-900 tracking-tighter">How It Works</h2>
-          <p className="text-gray-500 font-medium max-w-lg mx-auto">Three simple steps to get your perfect custom design</p>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter">How It Works</h2>
+          <p className="text-sm sm:text-base text-gray-500 font-medium max-w-lg mx-auto">Three simple steps to get your perfect custom design</p>
         </div>
-        <div className="hiw-steps grid grid-cols-1 md:grid-cols-3 gap-16">
+        <div className="hiw-steps grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-12 md:gap-16">
           {[
             { icon: Search, step: '01', title: 'Browse Designs', desc: 'Explore my portfolio of premium digital invitations, welcome boards, and event art across all occasions.' },
             { icon: MessageCircle, step: '02', title: 'Message on WhatsApp', desc: 'Found something you love? Send me a message on WhatsApp with the design you like and your event details.' },
@@ -394,10 +394,10 @@ const HowItWorks = () => {
         </div>
 
         {/* CTA below How It Works */}
-        <div className="hiw-cta mt-16 text-center flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="hiw-cta mt-10 sm:mt-16 text-center flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => openWhatsApp('Hi! I\'d like to discuss a custom design for my event.')}
-            className="bg-[#bf1e2e] hover:bg-[#a01826] text-white font-black px-10 py-5 text-lg rounded-full shadow-[0_15px_30px_rgba(191,30,46,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter inline-flex items-center justify-center gap-3"
+            className="bg-[#bf1e2e] hover:bg-[#a01826] text-white font-black px-8 sm:px-10 py-4 sm:py-5 text-base sm:text-lg rounded-full shadow-[0_15px_30px_rgba(191,30,46,0.3)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter inline-flex items-center justify-center gap-3"
           >
             <WhatsAppIcon className="w-6 h-6" />
             Start Your Order on WhatsApp
@@ -418,34 +418,34 @@ const HowItWorks = () => {
 // --- Contact CTA Banner --- 
 const WhatsAppBanner = () => {
   return (
-    <section className="py-20 bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] relative overflow-hidden">
+    <section className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl" />
         <div className="absolute bottom-10 right-10 w-60 h-60 bg-white rounded-full blur-3xl" />
       </div>
-      <div className="container mx-auto px-6 text-center relative z-10">
-        <div className="banner-content max-w-3xl mx-auto space-y-8">
+      <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
+        <div className="banner-content max-w-3xl mx-auto space-y-5 sm:space-y-8">
           <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
             <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse" />
             <span className="text-white/90 text-xs font-black uppercase tracking-widest">Available Right Now</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-black text-white tracking-tighter leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white tracking-tighter leading-tight">
             Ready to Make Your <br /> Event Unforgettable?
           </h2>
-          <p className="text-white/80 text-xl font-medium max-w-xl mx-auto">
+          <p className="text-white/80 text-base sm:text-lg md:text-xl font-medium max-w-xl mx-auto">
             Just send me a WhatsApp message with your ideas. I'll craft the perfect digital design for your special occasion.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <button
               onClick={() => openWhatsApp('Hi! I want to order a custom design for my event! 🎉')}
-              className="bg-white text-[#bf1e2e] font-black px-12 py-5 text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.15)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
+              className="bg-white text-[#bf1e2e] font-black px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.15)] transition-all hover:scale-105 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
             >
               <WhatsAppIcon className="w-6 h-6" />
               Chat on WhatsApp
             </button>
             <a
               href="tel:+919030811329"
-              className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 font-black px-12 py-5 text-lg rounded-full shadow-lg transition-all hover:scale-105 hover:bg-white/20 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
+              className="bg-white/10 backdrop-blur-md text-white border-2 border-white/30 font-black px-8 sm:px-12 py-4 sm:py-5 text-base sm:text-lg rounded-full shadow-lg transition-all hover:scale-105 hover:bg-white/20 active:scale-95 uppercase tracking-tighter flex items-center justify-center gap-3"
             >
               <Phone className="w-5 h-5" />
               +91 9030811329
@@ -458,14 +458,14 @@ const WhatsAppBanner = () => {
 };
 
 const Footer = ({ occasions, onSelect }) => (
-  <footer className="bg-[#111] text-white pt-20 pb-10 px-8">
-    <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-12 border-b border-white/10 pb-20">
+  <footer className="bg-[#111] text-white pt-12 sm:pt-16 md:pt-20 pb-8 sm:pb-10 px-4 sm:px-6 md:px-8">
+    <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 sm:gap-10 md:gap-12 border-b border-white/10 pb-12 sm:pb-16 md:pb-20">
       <div className="lg:col-span-2 space-y-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-white rounded-full overflow-hidden p-1 shadow-lg border-2 border-[#bf1e2e]">
             <img src="/images/logo.png" className="w-full h-full object-cover rounded-full" alt="Logo" />
           </div>
-          <span className="text-4xl font-black tracking-tighter">Digital Prints</span>
+          <span className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter">Digital Prints</span>
         </div>
         <p className="text-gray-400 text-sm leading-relaxed font-medium">
           Premium digital invitations, luxury welcome boards & bespoke event art — hand-crafted to elevate your celebration. Click below to chat directly with us.
@@ -529,8 +529,8 @@ const Footer = ({ occasions, onSelect }) => (
       </div>
     </div>
 
-    <div className="container mx-auto pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
-      <div className="flex items-center gap-8 text-[11px] font-bold text-gray-500 uppercase tracking-widest">
+    <div className="container mx-auto pt-8 sm:pt-10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6">
+      <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase tracking-widest">
         <span>© 2026 DESI DIGITAL PRINTS</span>
         <span className="hover:text-white cursor-pointer">PRIVACY POLICY</span>
         <span className="hover:text-white cursor-pointer">TERMS OF USE</span>
@@ -784,17 +784,17 @@ export default function LandingPage({ templates, onStart }) {
         <HeroSection />
 
         {/* Gallery Section */}
-        <section id="gallery" ref={galleryRef} className="py-20 bg-[#f9f9f9] scroll-mt-36">
-          <div className="container mx-auto px-6">
-            <div className="gallery-heading flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <div className="space-y-4">
+        <section id="gallery" ref={galleryRef} className="py-12 sm:py-16 md:py-20 bg-[#f9f9f9] scroll-mt-20">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="gallery-heading flex flex-col md:flex-row justify-between items-start md:items-end mb-8 sm:mb-12 gap-4 sm:gap-6">
+              <div className="space-y-2 sm:space-y-4">
                 <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">My Portfolio</div>
-                <h2 className="text-5xl font-black text-gray-900 tracking-tighter leading-none">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter leading-none">
                   {activeOccasion === 'all' ? 'Featured Designs' : `${occasions.find(o => o.id === activeOccasion)?.name} Collection`}
                 </h2>
-                <p className="text-gray-400 text-sm font-medium">Like a design? Tap to order via WhatsApp</p>
+                <p className="text-gray-400 text-xs sm:text-sm font-medium">Like a design? Tap to order via WhatsApp</p>
               </div>
-              <p className="text-gray-400 font-bold uppercase text-sm tracking-widest">
+              <p className="text-gray-400 font-bold uppercase text-xs sm:text-sm tracking-widest">
                 {filteredImages.length} designs
               </p>
             </div>
@@ -806,14 +806,14 @@ export default function LandingPage({ templates, onStart }) {
             />
 
             {loading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
                 {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                   <div key={i} className="bg-gray-200 animate-pulse aspect-[2/3] rounded-xl" />
                 ))}
               </div>
             ) : filteredImages.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto">
                   <AnimatePresence mode="popLayout">
                     {displayedImages.map((img, idx) => (
                       <motion.div
@@ -872,9 +872,6 @@ export default function LandingPage({ templates, onStart }) {
 
       {/* Tailwind Utility for Marquee */}
       <style>{`
-        html {
-          scroll-behavior: smooth;
-        }
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }

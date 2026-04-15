@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Trash2, ChevronLeft, Calendar, FileText, Sparkles, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-fox-toast';
 import { pb } from '../../lib/pb';
 
 export default function NotionEditor({ onBack }) {
@@ -50,17 +51,18 @@ export default function NotionEditor({ onBack }) {
     }
   };
 
-  const handleDeleteNote = async (id, e) => {
+  const handleDeleteNote = (id, e) => {
     e.stopPropagation();
-    if (!confirm('Delete this page?')) return;
-    try {
-      await pb.delete('notes', id);
-      const filtered = notes.filter(n => n.id !== id);
-      setNotes(filtered);
-      if (activeNote?.id === id) setActiveNote(filtered[0] || null);
-    } catch (err) {
-      console.error('Delete failed:', err);
-    }
+    const toastId = toast.custom(
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <p style={{ fontWeight: 700, fontSize: '14px' }}>Delete this page?</p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={async () => { toast.remove(toastId); try { await pb.delete('notes', id); const filtered = notes.filter(n => n.id !== id); setNotes(filtered); if (activeNote?.id === id) setActiveNote(filtered[0] || null); toast.success('Page deleted'); } catch (err) { console.error('Delete failed:', err); toast.error('Delete failed'); } }} style={{ padding: '6px 16px', background: '#bf1e2e', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Yes, Delete</button>
+          <button onClick={() => toast.remove(toastId)} style={{ padding: '6px 16px', background: '#e5e7eb', color: '#374151', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>Cancel</button>
+        </div>
+      </div>,
+      { duration: 10000 }
+    );
   };
 
   return (
