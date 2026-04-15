@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useMemo, memo } from 'react';
 import { pb } from '../lib/pb';
 import {
-  Search, MessageCircle, User, ChevronDown,
-  Menu, Heart, Bell, HelpCircle,
-  Clock, Star, ArrowRight, ShieldCheck,
-  CheckCircle, Phone, Sparkles, Palette, Send,
-  X, ZoomIn, ZoomOut, Maximize, MousePointer2,
-  ChevronUp, ChevronLeft, ChevronRight
+  Search, MessageCircle, ChevronDown,
+  Clock, ArrowRight,
+  CheckCircle, Phone, Sparkles,
+  X, ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -242,17 +239,15 @@ const HeroSection = () => {
       {/* Animated glass sliding bars */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
-          {[...Array(16)].map((_, i) => (
+          {[...Array(8)].map((_, i) => (
             <div
               key={i}
-              className="absolute top-0 h-full backdrop-blur-[1px]"
+              className="absolute top-0 h-full"
               style={{
                 width: '200px',
-                left: `${i * (100 / 12)}%`,
-                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.03) 20%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 80%, transparent 100%)',
+                left: `${i * (100 / 6)}%`,
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%)',
                 borderLeft: '1px solid rgba(255,255,255,0.06)',
-                borderRight: '1px solid rgba(255,255,255,0.03)',
-                boxShadow: '0 0 30px rgba(255,255,255,0.02)',
               }}
             />
           ))}
@@ -300,9 +295,7 @@ const HeroSection = () => {
               loop
               muted
               playsInline
-              preload="auto"
-              fetchPriority="high"
-              onEnded={() => { if (videoRef.current) videoRef.current.play(); }}
+              preload="metadata"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none" />
@@ -317,7 +310,18 @@ const HeroSection = () => {
   );
 };
 
-const CategoryCircles = ({ occasions, onSelect, activeId }) => {
+const CategoryCircles = ({ occasions, images, onSelect, activeId }) => {
+  // Build a map of occasionId -> first image URL for that collection
+  const coverMap = useMemo(() => {
+    const map = {};
+    images.forEach(img => {
+      if (img.occasion_id && img.occasion_id !== 'all' && !map[img.occasion_id] && img.image_url) {
+        map[img.occasion_id] = img.image_url;
+      }
+    });
+    return map;
+  }, [images]);
+
   return (
     <div className="py-12 sm:py-16 md:py-24 bg-white overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
@@ -327,28 +331,45 @@ const CategoryCircles = ({ occasions, onSelect, activeId }) => {
           <p className="text-sm sm:text-base text-gray-500 font-medium italic">Hand-crafted collections for every celebration</p>
         </div>
         <div className="cat-circles-wrap flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-12">
-          {occasions.map(occ => (
-            <div
-              key={occ.id}
-              className="cat-circle flex flex-col items-center gap-4 group cursor-pointer"
-              onClick={() => onSelect(occ)}
-            >
-              <div className={`w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1 sm:p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
-                <div className="w-full h-full rounded-full overflow-hidden relative">
-                  <img src={`https://picsum.photos/seed/${occ.name}/200/200`} loading="lazy" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                  <div className={`absolute inset-0 transition-colors ${activeId === occ.id ? 'bg-[#bf1e2e]/10' : 'bg-black/10 group-hover:bg-[#bf1e2e]/10'}`} />
+          {occasions.map(occ => {
+            const cover = coverMap[occ.id];
+            return (
+              <div
+                key={occ.id}
+                className="cat-circle flex flex-col items-center gap-4 group cursor-pointer"
+                onClick={() => onSelect(occ)}
+              >
+                <div className={`w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1 sm:p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
+                  <div className="w-full h-full rounded-full overflow-hidden relative">
+                    {cover ? (
+                      <img
+                        src={cover}
+                        alt={occ.name}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-[#bf1e2e]/20 to-[#8b0000]/30 flex items-center justify-center">
+                        <span className="text-2xl sm:text-3xl select-none">
+                          {occ.name.includes('Wed') ? '💍' : occ.name.includes('Birth') ? '🎂' : occ.name.includes('Anni') ? '🥂' : '🎉'}
+                        </span>
+                      </div>
+                    )}
+                    <div className={`absolute inset-0 transition-colors ${activeId === occ.id ? 'bg-[#bf1e2e]/10' : 'bg-black/10 group-hover:bg-[#bf1e2e]/10'}`} />
+                  </div>
                 </div>
+                <span className={`text-xs sm:text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
               </div>
-              <span className={`text-xs sm:text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
   );
 };
 
-const ProductCard = ({ item }) => {
+const ProductCard = memo(({ item }) => {
   return (
     <div
       className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
@@ -356,14 +377,15 @@ const ProductCard = ({ item }) => {
       <div className="aspect-[2/3] relative overflow-hidden bg-gray-50">
         <img
           src={item.image_url}
-          alt={item.name}
+          alt={item.name || 'Design'}
           loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
     </div>
   );
-};
+});
 
 
 // --- How It Works Section ---
@@ -668,7 +690,7 @@ export default function LandingPage({ templates, onStart }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [visibleCount, setVisibleCount] = useState(8);
+  const [visibleCount, setVisibleCount] = useState(12);
 
   const galleryRef = useRef(null);
 
@@ -677,7 +699,7 @@ export default function LandingPage({ templates, onStart }) {
       try {
         const [occData, uploadedData] = await Promise.all([
           pb.getFullList('occasions', { sort: 'name' }),
-          pb.getFullList('images', { sort: '-created' })
+          pb.getFullList('images', { sort: '-created,id' })
         ]);
 
         setOccasions(occData || []);
@@ -702,7 +724,12 @@ export default function LandingPage({ templates, onStart }) {
           };
         }).filter(Boolean);
 
+        // Fisher-Yates shuffle — fresh random order on every page load
         const unifiedImages = [...formattedUploads, ...staticTemplates];
+        for (let i = unifiedImages.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [unifiedImages[i], unifiedImages[j]] = [unifiedImages[j], unifiedImages[i]];
+        }
         setImages(unifiedImages);
         setLoading(false);
       } catch (err) {
@@ -764,13 +791,13 @@ export default function LandingPage({ templates, onStart }) {
     }
   };
 
-  const filteredImages = images.filter(img => {
+  const filteredImages = useMemo(() => images.filter(img => {
     const matchesSearch = img.name?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesOccasion = activeOccasion === 'all' || img.occasion_id === activeOccasion;
     return matchesSearch && matchesOccasion;
-  });
+  }), [images, searchQuery, activeOccasion]);
 
-  const displayedImages = filteredImages.slice(0, visibleCount);
+  const displayedImages = useMemo(() => filteredImages.slice(0, visibleCount), [filteredImages, visibleCount]);
   const hasMore = visibleCount < filteredImages.length;
 
 
@@ -857,6 +884,7 @@ export default function LandingPage({ templates, onStart }) {
 
         <CategoryCircles
           occasions={occasions}
+          images={images}
           onSelect={handleFilterChange}
           activeId={activeOccasion}
         />
