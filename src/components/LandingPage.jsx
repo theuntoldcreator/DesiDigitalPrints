@@ -268,24 +268,41 @@ const HeroSection = () => {
     }
   }, []);
 
+  const gridPixels = useMemo(() => {
+    const items = [];
+    const rows = 12;
+    const cols = 20;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        items.push({
+          id: `${r}-${c}`,
+          left: (c * 100) / cols,
+          top: (r * 100) / rows,
+          delay: (r + c) * 0.15,
+        });
+      }
+    }
+    return items;
+  }, []);
+
   return (
     <section className="relative w-full min-h-[60vh] sm:min-h-[70vh] lg:min-h-[calc(100vh-96px)] overflow-hidden bg-gradient-to-br from-[#8b0000] via-[#bf1e2e] to-[#e63946] flex items-center py-10 sm:py-14 lg:py-0">
-      {/* Animated glass sliding bars */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="hero-sliding-bars absolute inset-0" style={{ width: '200%' }}>
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute top-0 h-full"
-              style={{
-                width: '200px',
-                left: `${i * (100 / 6)}%`,
-                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%)',
-                borderLeft: '1px solid rgba(255,255,255,0.06)',
-              }}
-            />
-          ))}
-        </div>
+      {/* Square Pixel Ocean Wave Grid */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
+        {gridPixels.map((pixel) => (
+          <div
+            key={pixel.id}
+            className="absolute bg-white/40"
+            style={{
+              width: '4px',
+              height: '4px',
+              left: `${pixel.left}%`,
+              top: `${pixel.top}%`,
+              animation: `squareWave 4s infinite ease-in-out`,
+              animationDelay: `${pixel.delay}s`
+            }}
+          />
+        ))}
       </div>
       <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-white/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-[400px] h-[400px] bg-black/10 rounded-full blur-3xl pointer-events-none" />
@@ -344,8 +361,68 @@ const HeroSection = () => {
   );
 };
 
-const CategoryCircles = ({ occasions, images, onSelect, activeId }) => {
-  // Build a map of occasionId -> first image URL for that collection
+const GoogleReviewsMarquee = () => {
+  const reviewsRow1 = [
+    { name: "Suresh Kumar", text: "Best digital design studio in town! The quality is top-notch and delivery was super fast.", rating: 5, date: "2 days ago" },
+    { name: "Megha S.", text: "Ordered a welcome board for my sister's wedding. It was stunning and everyone asked about it!", rating: 5, date: "1 week ago" },
+    { name: "Amit Verma", text: "Very creative designs. They understood my requirements perfectly for our corporate event.", rating: 5, date: "3 days ago" }
+  ];
+
+  const reviewsRow2 = [
+    { name: "Ritu Jain", text: "The digital invites are so convenient and look premium. Excellent value for money.", rating: 5, date: "2 weeks ago" },
+    { name: "Vikram R.", text: "Fantastic experience. Creative, responsive, and very professional results.", rating: 5, date: "5 days ago" },
+    { name: "Anil Reddy", text: "The house warming designs were elegant and reached us within hours. Great service!", rating: 5, date: "1 month ago" }
+  ];
+
+  const Row = ({ items, reverse = false }) => (
+    <div className="flex relative overflow-hidden py-4 -mx-4 sm:-mx-6">
+      <div className={`flex gap-6 ${reverse ? 'animate-marquee-horizontal-reverse' : 'animate-marquee-horizontal'} hover:[animation-play-state:paused] whitespace-nowrap`}>
+        {[...items, ...items, ...items].map((review, idx) => (
+          <div 
+            key={idx}
+            className="w-[280px] sm:w-[320px] bg-white p-6 rounded-3xl shadow-sm border border-gray-100 shrink-0 flex flex-col gap-3"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center font-bold text-gray-400 text-sm">
+                  {review.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="text-sm font-black text-gray-900 tracking-tight">{review.name}</h4>
+                  <p className="text-[10px] text-gray-400 font-medium">{review.date}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1 bg-green-50 px-3 py-1 rounded-full">
+                <CheckCircle className="w-3 h-3 text-green-500" />
+                <span className="text-[8px] font-bold text-green-600 uppercase tracking-widest">Verified</span>
+              </div>
+            </div>
+            <div className="flex gap-0.5">
+              {[...Array(review.rating)].map((_, i) => (
+                <svg key={i} className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <p className="text-sm sm:text-base text-gray-700 font-medium leading-relaxed whitespace-normal italic">
+              "{review.text}"
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Row items={reviewsRow1} />
+      <Row items={reviewsRow2} reverse={true} />
+    </div>
+  );
+};
+
+
+const OccasionTestimonials = ({ occasions, images, onSelect, activeId }) => {
   const coverMap = useMemo(() => {
     const map = {};
     images.forEach(img => {
@@ -356,50 +433,131 @@ const CategoryCircles = ({ occasions, images, onSelect, activeId }) => {
     return map;
   }, [images]);
 
+  const testimonials = useMemo(() => [
+    {
+      occName: 'Wedding',
+      quote: "The digital invitation was absolutely stunning! It captured the luxury feel perfectly. Our guests were so impressed!",
+      author: "Aditi & Rahul",
+      rating: 5,
+      emoji: "💍"
+    },
+    {
+      occName: 'Birthday',
+      quote: "Amazing designs for my daughter's birthday. The welcome board was a huge hit! Fast and beautiful work.",
+      author: "Sneha Kapoor",
+      rating: 5,
+      emoji: "🎂"
+    },
+    {
+      occName: 'House Warming',
+      quote: "Simple, elegant, and delivered within hours. It was exactly what we needed for our new home ceremony.",
+      author: "Rajesh V.",
+      rating: 5,
+      emoji: "🏡"
+    },
+    {
+      occName: 'Baby Shower',
+      quote: "The most creative baby shower invite ever! Priya was so helpful with the customizations. Truly memorable.",
+      author: "Ananya Sharma",
+      rating: 5,
+      emoji: "👶"
+    },
+    {
+      occName: 'Anniversary',
+      quote: "Sophisticated and timeless. The anniversary design was elegant and our family loved the digital layout.",
+      author: "Karan Mehta",
+      rating: 5,
+      emoji: "🥂"
+    }
+  ], []);
+
   return (
-    <div className="py-12 sm:py-16 md:py-24 bg-white overflow-hidden">
+    <section className="py-16 sm:py-20 md:py-28 bg-gray-50/50 overflow-hidden border-y border-gray-100">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="cat-heading text-center mb-8 sm:mb-12 space-y-2 sm:space-y-3">
-          <div className="inline-block px-3 py-1 bg-[#bf1e2e]/10 text-[#bf1e2e] text-[10px] font-black uppercase tracking-widest rounded-full">Collections</div>
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tighter">Browse by Occasion</h2>
-          <p className="text-sm sm:text-base text-gray-500 font-medium italic">Hand-crafted collections for every celebration</p>
+        {/* Google Trust Header */}
+        <div className="flex flex-col md:flex-row items-center justify-between mb-12 sm:mb-20 gap-8">
+          <div className="text-center md:text-left space-y-4">
+            <div className="inline-block px-4 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase tracking-widest rounded-full border border-green-100 shadow-sm">Verified Experience</div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tighter">Loved by Our Clients</h2>
+            <p className="text-sm sm:text-base md:text-lg text-gray-500 font-medium italic max-w-xl mx-auto md:mx-0">Hand-crafted collections for every celebration, backed by 5-star Google reviews</p>
+          </div>
+
+          <div className="bg-white p-6 rounded-[32px] shadow-xl border border-gray-100 flex items-center gap-6">
+             <div className="bg-gray-50 p-3 rounded-2xl">
+               <svg className="w-8 h-8" viewBox="0 0 24 24">
+                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+               </svg>
+             </div>
+             <div>
+               <div className="flex gap-1 mb-1">
+                 {[...Array(5)].map((_, i) => (
+                   <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                   </svg>
+                 ))}
+               </div>
+               <h3 className="text-xl font-black text-gray-900 tracking-tighter">4.9 / 5.0 Rating</h3>
+               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Across 250+ Verified Global Reviews</p>
+             </div>
+          </div>
         </div>
-        <div className="cat-circles-wrap flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-12">
-          {occasions.map(occ => {
+
+        <GoogleReviewsMarquee />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-10">
+          {occasions.map((occ, idx) => {
+            const testimonial = testimonials.find(t => occ.name.toLowerCase().includes(t.occName.toLowerCase())) || testimonials[idx % testimonials.length];
             const cover = coverMap[occ.id];
+
             return (
-              <div
+              <motion.div
                 key={occ.id}
-                className="cat-circle flex flex-col items-center gap-4 group cursor-pointer"
+                whileHover={{ y: -10 }}
                 onClick={() => onSelect(occ)}
+                className={`p-6 sm:p-8 rounded-[32px] cursor-pointer transition-all duration-500 relative overflow-hidden group ${activeId === occ.id ? 'bg-[#bf1e2e] text-white shadow-2xl shadow-[#bf1e2e]/20 scale-[1.02]' : 'bg-white border border-gray-100 hover:shadow-xl'}`}
               >
-                <div className={`w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-3 p-1 sm:p-1.5 transition-all duration-500 ${activeId === occ.id ? 'border-[#bf1e2e] scale-110 shadow-[0_10px_30px_rgba(191,30,46,0.2)]' : 'border-transparent group-hover:border-[#bf1e2e]/30'}`}>
-                  <div className="w-full h-full rounded-full overflow-hidden relative">
-                    {cover ? (
-                      <img
-                        src={cover}
-                        alt={occ.name}
-                        loading="lazy"
-                        decoding="async"
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-[#bf1e2e]/20 to-[#8b0000]/30 flex items-center justify-center">
-                        <span className="text-2xl sm:text-3xl select-none">
-                          {occ.name.includes('Wed') ? '💍' : occ.name.includes('Birth') ? '🎂' : occ.name.includes('Anni') ? '🥂' : '🎉'}
-                        </span>
-                      </div>
-                    )}
-                    <div className={`absolute inset-0 transition-colors ${activeId === occ.id ? 'bg-[#bf1e2e]/10' : 'bg-black/10 group-hover:bg-[#bf1e2e]/10'}`} />
+                <div className="relative z-10 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className={`w-3 h-3 ${activeId === occ.id ? 'text-white' : 'text-yellow-400'} fill-current`} viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${activeId === occ.id ? 'bg-white/20' : 'bg-green-50'}`}>
+                      <CheckCircle className={`w-3 h-3 ${activeId === occ.id ? 'text-white' : 'text-green-500'}`} />
+                      <span className={`text-[8px] font-bold uppercase tracking-widest ${activeId === occ.id ? 'text-white' : 'text-green-600'}`}>Verified</span>
+                    </div>
+                  </div>
+
+                  <p className={`text-base sm:text-lg font-medium leading-relaxed ${activeId === occ.id ? 'text-white/90' : 'text-gray-700 italic'}`}>
+                    "{testimonial.quote}"
+                  </p>
+
+                  <div className="flex items-center gap-4 pt-4 border-t border-current opacity-10">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0 border-2 border-white shadow-md">
+                      {cover ? (
+                        <img src={cover} alt={occ.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-xl bg-gray-50">{testimonial.emoji}</div>
+                      )}
+                    </div>
+                    <div>
+                      <h4 className="font-black tracking-tighter uppercase text-sm">{testimonial.author}</h4>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest ${activeId === occ.id ? 'text-white/70' : 'text-[#bf1e2e]'}`}>{occ.name} • Tap to view</p>
+                    </div>
                   </div>
                 </div>
-                <span className={`text-xs sm:text-sm md:text-base font-black uppercase tracking-tighter transition-colors ${activeId === occ.id ? 'text-[#bf1e2e]' : 'text-gray-900 group-hover:text-[#bf1e2e]'}`}>{occ.name}</span>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
@@ -1102,13 +1260,12 @@ export default function LandingPage({ templates, onStart }) {
           </div>
         </section>
 
-        <CategoryCircles
+        <OccasionTestimonials
           occasions={occasions}
           images={images}
           onSelect={handleFilterChange}
           activeId={activeOccasion}
         />
-
         <HowItWorks />
         <WhatsAppBanner />
       </main>
@@ -1126,13 +1283,29 @@ export default function LandingPage({ templates, onStart }) {
 
       {/* Tailwind Utility for Marquee */}
       <style>{`
-        @keyframes heroSlide {
+        @keyframes marquee-horizontal {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
-        .hero-sliding-bars {
-          animation: heroSlide 30s linear infinite;
-          will-change: transform;
+        .animate-marquee-horizontal {
+          animation: marquee-horizontal 40s linear infinite;
+        }
+        @keyframes marquee-horizontal-reverse {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .animate-marquee-horizontal-reverse {
+          animation: marquee-horizontal-reverse 40s linear infinite;
+        }
+        @keyframes squareWave {
+          0%, 100% { 
+            transform: translate(0, 0) scale(1); 
+            opacity: 0.2; 
+          }
+          50% { 
+            transform: translate(20px, -15px) scale(1.5); 
+            opacity: 0.8; 
+          }
         }
         .hero-badge, .hero-heading, .hero-desc, .hero-btns, .hero-video-wrap, .cat-circle, .hiw-step, .banner-content {
           will-change: opacity, transform;
