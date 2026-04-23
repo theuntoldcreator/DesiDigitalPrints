@@ -43,3 +43,38 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ===== INFINITE MARQUEE ===== */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee var(--duration, 40s) linear infinite reverse;
+}
+
+.pause-on-hover:hover .animate-marquee,
+.pause-on-hover:hover .animate-marquee-reverse,
+.pause-on-hover:hover .animate-marquee-vertical,
+.pause-on-hover:hover .animate-marquee-vertical-reverse {
+  animation-play-state: paused;
+}
+
+/* ===== VERTICAL MARQUEE ===== */
+@keyframes marquee-vertical {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-vertical-reverse {
+  animation: marquee-vertical var(--duration, 40s) linear infinite reverse;
+}

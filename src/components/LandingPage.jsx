@@ -4,9 +4,43 @@ import {
   Search, MessageCircle, ChevronDown,
   Clock, ArrowRight,
   CheckCircle, Phone, Sparkles,
-  X, ChevronUp
+  X, ChevronUp, Maximize2, ExternalLink as ExternalLinkIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { optimizeImageUrl } from '../utils/imageOptimizer';
+
+const CLOUD_IMAGES = [
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796441/27_adpvr9.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796441/01_oldv2p.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796440/23_h3aews.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796440/03_udbgle.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796440/02_br4upy.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/22_x8ad46.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/05_nulkj8.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/09_xyxntq.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/04_p0esji.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796438/06_xyppl9.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796438/07_j5qwq9.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796438/08_y8vfgk.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796437/110_ah4gzh.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796437/12_n6ho2s.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/15_x5nvjr.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796437/13_ibotmh.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/17_r9ncvc.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/14_ob6oul.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/16_hdcxdk.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/19_wwmr0b.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/18_zmpuln.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796435/21_sdibbb.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/31_t4xvgb.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/24_umfbsq.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796435/28_eztymb.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/30_kgeu27.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/32_miclrl.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/26_er8cfs.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/25_d1mgn7.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/33_vpdmwk.png"
+];
 
 
 
@@ -369,24 +403,183 @@ const CategoryCircles = ({ occasions, images, onSelect, activeId }) => {
   );
 };
 
-const ProductCard = memo(({ item }) => {
+const ProductCard = memo(({ item, onPreview }) => {
   return (
     <div
-      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100"
+      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer"
+      onClick={() => onPreview(item)}
     >
-      <div className="aspect-[2/3] relative overflow-hidden bg-gray-50">
-        <img
-          src={item.image_url}
-          alt={item.name || 'Design'}
-          loading="lazy"
-          decoding="async"
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+      <div className="aspect-[2/3] relative overflow-hidden bg-gray-50 border-2 border-transparent group-hover:border-[#bf1e2e]/10">
+        {item.image_url ? (
+          <img
+            src={item.image_url}
+            alt={item.name || 'Design'}
+            loading="lazy"
+            decoding="async"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+              e.target.parentElement.innerHTML = '<span class="text-xs text-gray-400 font-bold uppercase">Image Error</span>';
+            }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <span className="text-xs text-gray-400 font-bold uppercase">No Image</span>
+          </div>
+        )}
+        {/* Subtle hover overlay for polish */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
       </div>
     </div>
   );
 });
 
+// --- Image Preview Modal Component ---
+const ImagePreviewModal = ({ item, onClose }) => {
+  useEffect(() => {
+    // Lock scroll when modal is open
+    document.body.style.overflow = 'hidden';
+    return () => {
+      // Re-enable scroll when modal is closed
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  if (!item) return null;
+
+  return (
+    <div className="fixed inset-0 z-[1000] flex flex-col items-center justify-center bg-black/98 p-4 overflow-hidden" onClick={onClose}>
+       <button 
+         onClick={onClose} 
+         className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-[1001] p-3 bg-white/10 rounded-full backdrop-blur-md"
+       >
+          <X className="w-8 h-8" />
+       </button>
+       
+       <motion.div 
+         initial={{ scale: 0.95, opacity: 0 }}
+         animate={{ scale: 1, opacity: 1 }}
+         className="relative max-w-4xl w-full flex flex-col items-center gap-6"
+         onClick={(e) => e.stopPropagation()}
+       >
+          <img 
+            src={item.image_url} 
+            className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl border border-white/10" 
+            alt={item.name}
+            onError={(e) => {
+              e.target.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'w-64 h-64 flex flex-col items-center justify-center bg-zinc-800 rounded-2xl text-white gap-4';
+              fallback.innerHTML = '<span class="text-3xl">⚠️</span><span class="font-bold">Image failed to load</span>';
+              e.target.parentNode.insertBefore(fallback, e.target);
+            }}
+          />
+
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-center">
+            <h3 className="text-xl font-black text-white uppercase tracking-tighter">{item.name || 'Premium Design'}</h3>
+          </div>
+
+          <div className="flex gap-4">
+            <button
+              onClick={() => openWhatsApp(`Hi! I'm interested in this design: ${item.name || 'Premium Design'}`)}
+              className="bg-[#25D366] text-white font-black px-8 py-4 rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-3 uppercase tracking-tighter text-sm"
+            >
+              <WhatsAppIcon className="w-5 h-5" />
+              Order on WhatsApp
+            </button>
+            <button
+              onClick={() => window.open(item.image_url, '_blank')}
+              className="bg-white/10 text-white border border-white/20 font-black px-6 py-4 rounded-full hover:bg-white/20 transition-all flex items-center gap-3 uppercase tracking-tighter text-xs"
+            >
+              <ExternalLinkIcon className="w-4 h-4" />
+              Original
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+
+// --- Custom Hook for Infinite Auto-Scroll with Manual Control ---
+const useInfiniteScroll = (ref, speed = 0.5, isActive = true) => {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !isActive) return;
+
+    let animationFrameId;
+    let isInteracting = false;
+    let lastInteractionTime = 0;
+
+    const scroll = () => {
+      // Resume auto-scroll only if not interacting and enough time has passed since last interaction
+      if (!isInteracting && Date.now() - lastInteractionTime > 1500) {
+        el.scrollTop += speed;
+        // Seamless loop jump
+        if (el.scrollTop >= el.scrollHeight / 2) {
+          el.scrollTop = 1;
+        } else if (el.scrollTop <= 0) {
+          el.scrollTop = (el.scrollHeight / 2) - 1;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    const handleStart = () => { isInteracting = true; };
+    const handleEnd = () => {
+      isInteracting = false;
+      lastInteractionTime = Date.now();
+    };
+
+    el.addEventListener('mousedown', handleStart, { passive: true });
+    el.addEventListener('touchstart', handleStart, { passive: true });
+    el.addEventListener('wheel', handleEnd, { passive: true }); // Pause on wheel
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchend', handleEnd);
+
+    animationFrameId = requestAnimationFrame(scroll);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      el.removeEventListener('mousedown', handleStart);
+      el.removeEventListener('touchstart', handleStart);
+      el.removeEventListener('wheel', handleEnd);
+      window.removeEventListener('mouseup', handleEnd);
+      window.removeEventListener('touchend', handleEnd);
+    };
+  }, [speed, isActive]);
+};
+
+// --- Vertical Column Marquee Component ---
+const VerticalColumnMarquee = ({ items, speed = 0.5 }) => {
+  const scrollRef = useRef(null);
+  // Double the items for seamless loop
+  const displayItems = useMemo(() => [...items, ...items], [items]);
+
+  useInfiniteScroll(scrollRef, speed);
+
+  return (
+    <div
+      ref={scrollRef}
+      className="relative overflow-y-auto hide-scrollbar h-full py-4 flex-1 cursor-grab active:cursor-grabbing select-none"
+      style={{ scrollBehavior: 'auto' }} // Must be auto for smooth JS scroll
+    >
+      <div className="flex flex-col gap-6">
+        {displayItems.map((item, idx) => (
+          <div
+            key={`${item.id}-${idx}`}
+            className="w-full shrink-0"
+          >
+            <ProductCard item={item} onPreview={(img) => window.dispatchEvent(new CustomEvent('open-preview', { detail: img }))} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 // --- How It Works Section ---
 const HowItWorks = () => {
@@ -691,8 +884,16 @@ export default function LandingPage({ templates, onStart }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [visibleCount, setVisibleCount] = useState(12);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const galleryRef = useRef(null);
+
+  useEffect(() => {
+    // Listen for preview events from the marquee (since it's a separate component)
+    const handlePreview = (e) => setPreviewImage(e.detail);
+    window.addEventListener('open-preview', handlePreview);
+    return () => window.removeEventListener('open-preview', handlePreview);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -717,15 +918,28 @@ export default function LandingPage({ templates, onStart }) {
 
         const formattedUploads = (uploadedData || []).map(img => {
           if (!img) return null;
+          let url = '';
+          if (img.external_url) {
+            url = optimizeImageUrl(img.external_url);
+          } else if (img.file) {
+            url = pb.getFileUrl('images', img.id, img.file);
+          }
           return {
             ...img,
-            image_url: img.file ? pb.getFileUrl('images', img.id, img.file) : '',
+            image_url: url,
             occasion_id: img.occasion || 'all'
           };
         }).filter(Boolean);
 
+        const formattedCloudImages = CLOUD_IMAGES.map((url, idx) => ({
+          id: `cloud-${idx}`,
+          image_url: optimizeImageUrl(url),
+          name: `Premium Design ${idx + 1}`,
+          occasion_id: 'all'
+        }));
+
         // Fisher-Yates shuffle — fresh random order on every page load
-        const unifiedImages = [...formattedUploads, ...staticTemplates];
+        const unifiedImages = [...formattedUploads, ...staticTemplates, ...formattedCloudImages];
         for (let i = unifiedImages.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [unifiedImages[i], unifiedImages[j]] = [unifiedImages[j], unifiedImages[i]];
@@ -849,24 +1063,30 @@ export default function LandingPage({ templates, onStart }) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.5, delay: (idx % 8) * 0.05 }}
+                        className="cursor-pointer"
                       >
-                        <ProductCard item={img} />
+                        <ProductCard item={img} onPreview={setPreviewImage} />
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 </div>
 
+                {/* Infinite Scroll Trigger */}
                 {hasMore && (
-                  <div className="mt-16 flex justify-center pb-10">
-                    <button
-                      onClick={() => setVisibleCount(prev => prev + 8)}
-                      className="group relative px-12 py-4 bg-white text-black font-black uppercase tracking-tighter text-lg rounded-full border-2 border-gray-900 shadow-[0_10px_0_#1a1a1a] active:shadow-none active:translate-y-[10px] transition-all overflow-hidden"
-                    >
-                      <span className="relative z-10 flex items-center gap-2" id="loadMoreBtn">
-                        Load More Designs
-                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                      </span>
-                    </button>
+                  <div
+                    ref={(el) => {
+                      if (el) {
+                        const observer = new IntersectionObserver((entries) => {
+                          if (entries[0].isIntersecting) {
+                            setVisibleCount(prev => prev + 8);
+                          }
+                        }, { threshold: 0.5 });
+                        observer.observe(el);
+                      }
+                    }}
+                    className="h-20 flex items-center justify-center mt-10"
+                  >
+                    <div className="w-8 h-8 border-4 border-gray-100 border-t-[#bf1e2e] rounded-full animate-spin" />
                   </div>
                 )}
               </>
@@ -898,23 +1118,14 @@ export default function LandingPage({ templates, onStart }) {
       <Footer occasions={occasions} onSelect={handleFilterChange} />
       <ScrollToTop />
 
+      <AnimatePresence>
+        {previewImage && (
+          <ImagePreviewModal item={previewImage} onClose={() => setPreviewImage(null)} />
+        )}
+      </AnimatePresence>
+
       {/* Tailwind Utility for Marquee */}
       <style>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          display: flex;
-          animation: marquee 20s linear infinite;
-        }
-        .animate-bounce-slow {
-          animation: bounce 3s ease-in-out infinite;
-        }
-        @keyframes bounce {
-          0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
-          50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
-        }
         @keyframes heroSlide {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }

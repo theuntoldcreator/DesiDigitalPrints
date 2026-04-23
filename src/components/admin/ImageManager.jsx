@@ -1,7 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Upload, Trash2, Image as ImageIcon, Plus, X, CheckCircle, Check, ChevronDown } from 'lucide-react';
+import { Upload, Trash2, Image as ImageIcon, Plus, X, CheckCircle, Check, ChevronDown, Link as LinkIcon, Sparkles } from 'lucide-react';
 import { toast } from 'react-fox-toast';
 import { pb } from '../../lib/pb';
+import { optimizeImageUrl } from '../../utils/imageOptimizer';
+
+const COMMON_CLOUDINARY_LINKS = [
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796441/27_adpvr9.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796441/01_oldv2p.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796440/23_h3aews.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796440/03_udbgle.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796440/02_br4upy.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/22_x8ad46.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/05_nulkj8.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/09_xyxntq.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796439/04_p0esji.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796438/06_xyppl9.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796438/07_j5qwq9.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796438/08_y8vfgk.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796437/110_ah4gzh.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796437/12_n6ho2s.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/15_x5nvjr.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796437/13_ibotmh.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/17_r9ncvc.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/14_ob6oul.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/16_hdcxdk.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/19_wwmr0b.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796436/18_zmpuln.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796435/21_sdibbb.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/31_t4xvgb.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/24_umfbsq.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796435/28_eztymb.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/30_kgeu27.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/32_miclrl.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/26_er8cfs.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/25_d1mgn7.png",
+  "https://res.cloudinary.com/dlt9qkkev/image/upload/v1776796434/33_vpdmwk.png"
+];
 
 export default function ImageManager({ occasions, selectedOccasion, onSelectOccasion }) {
   const [images, setImages] = useState([]);
@@ -12,6 +45,8 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [dimensions, setDimensions] = useState(null);
+  const [externalUrl, setExternalUrl] = useState('');
+  const [isBatchImporting, setIsBatchImporting] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +94,59 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
     setDimensions(null);
     setNewName('');
     if (fileInputRef.current) fileInputRef.current.value = '';
+    setExternalUrl('');
+  };
+
+  const handleExternalUpload = async () => {
+    if (!externalUrl.trim() || !selectedOccasion) return;
+
+    setIsUploading(true);
+    try {
+      await pb.create('images', {
+        external_url: externalUrl.trim(),
+        name: newName || 'External Image',
+        occasion: selectedOccasion.id
+      });
+      fetchImages();
+      clearSelection();
+      toast.success('External image added!');
+    } catch (err) {
+      console.error('External upload failed:', err);
+      toast.error('Failed to add external image. Ensure the "external_url" field exists in PocketBase.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleBatchImport = async () => {
+    if (!selectedOccasion) {
+      toast.warning('Please select a booklet first!');
+      return;
+    }
+
+    const confirmImport = window.confirm(`Import all ${COMMON_CLOUDINARY_LINKS.length} common images into "${selectedOccasion.name}"?`);
+    if (!confirmImport) return;
+
+    setIsBatchImporting(true);
+    toast.info('Starting batch import...', { duration: 2000 });
+
+    let successCount = 0;
+    for (const link of COMMON_CLOUDINARY_LINKS) {
+      try {
+        await pb.create('images', {
+          external_url: link,
+          name: `Design ${link.split('/').pop().split('_')[0]}`,
+          occasion: selectedOccasion.id
+        });
+        successCount++;
+      } catch (err) {
+        console.warn('Batch item failed:', link);
+      }
+    }
+
+    setIsBatchImporting(false);
+    fetchImages();
+    toast.success(`Successfully imported ${successCount} images!`);
   };
 
   const handleUpload = async () => {
@@ -203,18 +291,51 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
         <h3 className="font-black text-2xl mb-8 tracking-tighter dark:text-white">Personalize Your Gallery</h3>
         
         {!selectedFile ? (
-          <div 
-            onClick={() => fileInputRef.current?.click()}
-            className="border-4 border-dashed border-gray-100 dark:border-zinc-700 rounded-[24px] p-12 flex flex-col items-center justify-center gap-4 hover:border-[#bf1e2e]/30 dark:hover:border-[#bf1e2e]/50 hover:bg-[#bf1e2e]/5 dark:hover:bg-[#bf1e2e]/10 transition-all cursor-pointer group"
-          >
-            <div className="w-20 h-20 bg-gray-50 dark:bg-zinc-800 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Upload className="w-10 h-10 text-gray-300 dark:text-zinc-500 group-hover:text-[#bf1e2e] dark:group-hover:text-[#bf1e2e]" />
+            <div className="flex flex-col gap-6 w-full">
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                className="border-4 border-dashed border-gray-100 dark:border-zinc-700 rounded-[24px] p-8 flex flex-col items-center justify-center gap-4 hover:border-[#bf1e2e]/30 dark:hover:border-[#bf1e2e]/50 hover:bg-[#bf1e2e]/5 dark:hover:bg-[#bf1e2e]/10 transition-all cursor-pointer group"
+              >
+                <Upload className="w-8 h-8 text-gray-300 dark:text-zinc-500 group-hover:text-[#bf1e2e]" />
+                <p className="font-black text-gray-900 dark:text-white uppercase tracking-tighter text-sm">Upload File</p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="h-[1px] flex-1 bg-gray-100 dark:bg-zinc-800" />
+                <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">OR</span>
+                <div className="h-[1px] flex-1 bg-gray-100 dark:bg-zinc-800" />
+              </div>
+
+              <div className="bg-gray-50 dark:bg-zinc-800/50 p-6 rounded-[24px] border border-gray-100 dark:border-zinc-800 space-y-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <LinkIcon className="w-5 h-5 text-[#bf1e2e]" />
+                  <p className="font-black text-gray-900 dark:text-white uppercase tracking-tighter">Add from URL</p>
+                </div>
+                <input 
+                  type="text" 
+                  value={externalUrl}
+                  onChange={(e) => {
+                    setExternalUrl(e.target.value);
+                    if (e.target.value.includes('cloudinary.com')) {
+                      setPreviewUrl(optimizeImageUrl(e.target.value, 400));
+                    } else {
+                      setPreviewUrl(e.target.value);
+                    }
+                  }}
+                  placeholder="Paste Cloudinary or external link..."
+                  className="w-full bg-white dark:bg-zinc-900 border-2 border-gray-100 dark:border-zinc-700 rounded-xl p-4 text-sm font-bold outline-none focus:border-[#bf1e2e] transition-all dark:text-white"
+                />
+                
+                <button 
+                  onClick={handleBatchImport}
+                  disabled={isBatchImporting}
+                  className="w-full bg-white dark:bg-zinc-800 border-2 border-gray-100 dark:border-zinc-700 text-[#bf1e2e] font-black py-4 rounded-xl hover:bg-[#bf1e2e] hover:text-white hover:border-[#bf1e2e] transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-[10px]"
+                >
+                  <Sparkles className={`w-4 h-4 ${isBatchImporting ? 'animate-spin' : ''}`} />
+                  {isBatchImporting ? 'Importing...' : `Import ${COMMON_CLOUDINARY_LINKS.length} Common Images`}
+                </button>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="font-black text-xl text-gray-900 dark:text-white">Select invitation print</p>
-              <p className="text-gray-400 dark:text-gray-500 font-medium">Standard size: 20x30 inches (2:3 Ratio)</p>
-            </div>
-          </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-8 items-start animate-in fade-in slide-in-from-bottom-4">
             {/* Visual Preview */}
@@ -270,12 +391,12 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
                   </div>
                   <div className="flex gap-4">
                     <button 
-                      onClick={handleUpload}
+                      onClick={externalUrl ? handleExternalUpload : handleUpload}
                       disabled={isUploading}
                       className="flex-1 bg-[#bf1e2e] text-white font-black py-4 rounded-xl shadow-[0_10px_20px_rgba(191,30,46,0.2)] hover:bg-[#a01826] active:translate-y-1 transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-sm"
                     >
-                      {isUploading ? 'Finalizing...' : 'Upload to Gallery'}
-                      <Upload className="w-4 h-4" />
+                      {isUploading ? 'Finalizing...' : (externalUrl ? 'Add External Link' : 'Upload to Gallery')}
+                      {externalUrl ? <LinkIcon className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
                     </button>
                     <button 
                       onClick={clearSelection}
@@ -311,7 +432,7 @@ export default function ImageManager({ occasions, selectedOccasion, onSelectOcca
             {images.map((img) => (
               <div key={img.id} className="group relative aspect-[2/3] bg-gray-100 dark:bg-zinc-800 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-zinc-700">
                 <img 
-                  src={pb.getFileUrl('images', img.id, img.file)} 
+                  src={img.external_url ? optimizeImageUrl(img.external_url, 400) : pb.getFileUrl('images', img.id, img.file)} 
                   alt={img.name} 
                   className="w-full h-full object-cover transition-transform group-hover:scale-110" 
                 />
